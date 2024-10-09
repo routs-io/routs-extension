@@ -1,23 +1,54 @@
 {
-  "manifest_version": 3,
   "name": "Routs Extension",
-  "version": "1.0",
-  "description": "A complete browser extension built with Vue 3",
-  "permissions": ["storage", "tabs", "activeTab"],
-  "background": {
-    "service_worker": "background.js"
-  },
+  "description": "Routs Extension",
+  "version": "0.0.1",
+  "version_name": "0.0.1",
+  "manifest_version": 3,
   "action": {
     "default_popup": "index.html"
   },
-  "icons": {
-    "48": "icons/icon48.png",
-    "128": "icons/icon128.png"
+  "background": {
+    "service_worker": "./scripts/background/index.js",
+    "type": "module"
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["contentScript.js"]
+      "all_frames": true,
+      "js": ["./scripts/content-script/index.js"],
+      "matches": [
+        "http://127.0.0.1:5500/*",
+        "http://localhost:3620/*"
+      ],
+      "run_at": "document_end"
     }
-  ]
+  ],
+  "offline_enabled": true,
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "scripts/content-script/injectedScript.js"
+      ],
+      "matches": [
+        "http://127.0.0.1:5500/*",
+        "http://localhost:3620/*"
+      ]
+    }
+  ],
+  "externally_connectable": {
+    "matches": [
+      "http://127.0.0.1:5500/*",
+      "http://localhost:3620/*"
+    ]
+  },
+  "icons": {
+    "16": "./favicon.ico",
+    "24": "./favicon.ico",
+    "48": "./icons/icon48.png",
+    "128": "./icons/icon128.png"
+  }
 }
