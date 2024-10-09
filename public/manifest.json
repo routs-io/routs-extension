@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Routs Extension",
+  "version": "1.0",
+  "description": "A complete browser extension built with Vue 3",
+  "permissions": ["storage", "tabs", "activeTab"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "index.html"
+  },
+  "icons": {
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["contentScript.js"]
+    }
+  ]
+}

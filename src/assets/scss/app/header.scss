@@ -1,0 +1,28 @@
+.header {
+  margin-bottom: 1rem;
+
+  &__nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__item {
+    padding: 0.5rem 0.25rem;
+
+    font-size: 0.875rem;
+    color: var(--label-tertiary);
+
+    transition: var(--ease);
+
+    @media (any-hover: hover) {
+      &:hover {
+        color: var(--label-secondary);
+      }
+    }
+
+    &.active {
+      color: var(--label-primary);
+    }
+  }
+}

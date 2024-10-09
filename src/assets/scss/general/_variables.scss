@@ -1,0 +1,81 @@
+:root {
+  // Colors
+  --white: #fff;
+  --white-15: #ebedef;
+  --white-90: #ffffffe5;
+  --blue: #0074f8;
+  --blue-5: #0074f80d;
+  --blue-10: #0074f81a;
+  --blue-200: #0084ff;
+  --blue-hover: #0062e2;
+  --red-4: #ff00000a;
+  --black: #181c20;
+  --black-30: #22272b;
+
+  // Transitions
+  --ease: 0.2s ease;
+
+  // Main
+  --surface-primary: #ffffff;
+  --surface-secondary: #f6f7f8;
+  --surface-tertiary: #f0f2f4;
+  --surface-quaternary: #ebedef;
+  --surface-shading: #4f4f4f66;
+  --surface-blur-20: #c7cdd333;
+
+  --border-primary: #dce0e4;
+  --border-secondary: #ebedef;
+  --border-tertiary: #f0f2f4;
+  --border-quaternary: #f6f7f8;
+  --border-hover: #c8cdd5;
+  --border-active: #758195;
+  --border-focus: #0074f8;
+
+  --label-primary: #121212;
+  --label-secondary: #131727cc;
+  --label-tertiary: #13172780;
+  --label-quaternary: #1317274d;
+  --label-success: #178f37;
+  --label-error: #e51752;
+  --label-orange: #eb9531;
+
+  --button-default: #0074f8;
+  --button-hover: #0062e2;
+  --button-focus: #0074f880;
+  --button-surface: #fcfdfd;
+  --button-surface-hover: #ffffff;
+  --button-disabled: #1212120d;
+  --button-label-primary: #eef2fd;
+  --button-label-outlined: #131727cc;
+  --button-border-outlined: #d4d8de;
+  --button-border-outlined-hover: #8d97a8;
+
+  --checkbox-border: #d4d8de;
+  --checkbox-surface: #0074f8;
+
+  --input-surface: #f9fafb;
+  --input-surface-active: #ffffff;
+  --input-surface-error: #fff7f9;
+  --input-border: #ebedef;
+  --input-border-hover: #c8cdd5;
+  --input-border-active: #758195;
+  --input-border-active-blue: #0074f8;
+  --input-border-focus: #0074f880;
+  --input-border-error: #f81758;
+  --input-border-error-focus: #f8175870;
+
+  --icon-secondary: #131727cc;
+  --icon-tertiary: #13172780;
+  --icon-quaternary: #1317274d;
+  --icon-hover: #0074f8;
+  --icon-error: #e51752;
+  --icon-warning-primary: #efaa59;
+  --icon-warning-secondary: #efaa594d;
+  --icon-success-primary: #1dac43;
+  --icon-success-secondary: #178f374d;
+  --icon-progress-primary: #0074f8;
+  --icon-progress-secondary: #0074f833;
+
+  --shadow: -10px 10px 20px 0px #13172710;
+  --shadow-2: 0px 8px 8px 0px #00000005;
+}

@@ -1,0 +1,163 @@
+.input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  width: 100%;
+
+  &__label {
+    margin-left: 0.75rem;
+
+    font-size: 0.875rem;
+    line-height: 140%;
+  }
+
+  &__block {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    height: 2rem;
+    padding: 0 0.75rem;
+    border-radius: 0.5rem;
+
+    background-color: var(--input-surface);
+    border: 1px solid var(--input-border);
+    outline: 3px solid transparent;
+
+    transition: var(--ease);
+
+    @media (any-hover: hover) {
+      &:hover {
+        border-color: var(--input-border-hover);
+      }
+    }
+
+    &:has(input:focus) {
+      background-color: var(--input-surface-active);
+      border-color: var(--input-border-active);
+
+      & .input {
+        &__icon {
+          color: var(--label-primary);
+          transition: var(--ease);
+        }
+      }
+    }
+  }
+
+  &__icon {
+    flex-shrink: 0;
+
+    color: var(--label-quaternary);
+    transition: var(--ease);
+  }
+
+  input {
+    width: 100%;
+    height: 100%;
+
+    font-weight: 500;
+    font-size: 0.75rem;
+    line-height: 140%;
+    color: var(--label-primary);
+    caret-color: var(--input-border-active);
+
+    background-color: transparent;
+
+    transition: var(--ease);
+
+    &::placeholder {
+      color: var(--label-quaternary);
+    }
+
+    &:-webkit-autofill,
+    &:-webkit-autofill:hover,
+    &:-webkit-autofill:focus,
+    &:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 30px var(--input-surface) inset !important;
+    }
+  }
+
+  &__toggler {
+    display: flex;
+
+    color: var(--label-quaternary);
+    transition: var(--ease);
+    cursor: pointer;
+
+    @media (any-hover: hover) {
+      &:hover {
+        color: var(--input-border-active);
+      }
+    }
+  }
+
+  &.disabled,
+  &[disabled] {
+    opacity: 0.5;
+
+    input {
+      pointer-events: none;
+    }
+  }
+
+  &__error {
+    position: absolute;
+    bottom: calc(100% + 0.25rem);
+    right: 50%;
+    z-index: 1;
+
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.375rem;
+
+    font-weight: normal;
+    font-size: 0.625rem;
+    line-height: 140%;
+    text-wrap: nowrap;
+    color: var(--white-90);
+
+    background-color: var(--input-border-error);
+
+    transform: translateX(50%);
+  }
+
+  &--error {
+    & .input {
+      &__block,
+      &__block:has(input:focus) {
+        background-color: var(--input-surface-error);
+        border-color: var(--input-border-error);
+      }
+    }
+
+    &.input--medium {
+      & .input {
+        &__block:has(input:focus) {
+          outline-color: var(--input-border-error-focus);
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .input {
+    &__block {
+      &:has(input:focus) {
+        & .input {
+          &__validation {
+            transform: translateY(-1.25rem);
+          }
+        }
+      }
+    }
+
+    &__toggler svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
+}
