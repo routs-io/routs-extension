@@ -17,3 +17,11 @@ chrome.runtime.onMessageExternal.addListener(async function (request, sender, se
             break;
     }
 });
+
+chrome.runtime.onMessage.addListener(async function (request, sender, sendResponse) {
+    console.log('background.js', request);
+    console.log('internal', sender);
+    console.log('sender.tab', sender.tab);
+    console.log('request', request);
+    sendResponse({ message: 'hello from background.js' });
+});

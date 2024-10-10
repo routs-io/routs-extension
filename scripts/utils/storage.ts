@@ -1,4 +1,4 @@
-declare const chrome: any;
+import 'chrome';
 
 export const localStorage = {
     get: async (key: string) => {
@@ -16,9 +16,9 @@ export const localStorage = {
         await chrome.storage.sync.set({ [key]: storage });
     },
     listen: (callback: (arg: any) => void) => {
-        chrome.storage.onChanged.addListener((changes: { storage: { newValue: any; }; }) => {
-            if (changes.storage) {
-                callback(changes.storage.newValue);
+        chrome.storage.onChanged.addListener((changes: { [key: string]: chrome.storage.StorageChange }, areaName: string) => {
+            if (changes[areaName]) {
+                callback(changes[areaName].newValue);
             }
         });
     },

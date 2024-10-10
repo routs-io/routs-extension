@@ -46,8 +46,8 @@
     ]
   },
   "icons": {
-    "16": "./favicon.ico",
-    "24": "./favicon.ico",
+    "16": "./icons/icon48.png",
+    "24": "./icons/icon48.png",
     "48": "./icons/icon48.png",
     "128": "./icons/icon128.png"
   }
