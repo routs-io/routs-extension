@@ -8,14 +8,7 @@ export const useStorageStore = defineStore('storage', {
             return storage[key];
         },
         async set(key: string, value: unknown) {
-            let storage = await this.get(key);
-            console.log(storage);
-            if (Array.isArray(storage)) {
-                storage.push(value);
-            } else {
-                storage = value;
-            }
-            await chrome.storage.sync.set({ [key]: storage });
+            await chrome.storage.sync.set({ [key]: value });
         },
         async listen(callback: (arg: any) => void) {
             chrome.storage.onChanged.addListener((changes: { [key: string]: chrome.storage.StorageChange }, areaName: string) => {

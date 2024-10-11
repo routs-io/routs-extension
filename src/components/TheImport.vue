@@ -2,11 +2,18 @@
 // Imports
 import { ref } from 'vue'
 import AppButton from './app/AppButton.vue'
-// Password
+import { useWalletsStore } from '@/stores/wallets';
+const {saveWallets} = useWalletsStore();
+
 const walletsInput = ref<string>('')
 
 async function parseWallets() {
-  console.log(walletsInput.value.split("\n"))
+  const wallets = walletsInput.value.split("\n")
+    .map(wallet => wallet.trim())
+    .filter(wallet => wallet.length > 0)
+    .filter(wallet => /^(0x)?[0-9a-fA-F]{64}$/.test(wallet));
+  walletsInput.value = wallets.join("\n")
+  await saveWallets(wallets)
 }
 </script>
 
