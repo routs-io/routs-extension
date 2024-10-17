@@ -1,3 +1,5 @@
 export interface IWalletsStore {
-    wallets: string[]
+    wallets: string[],
+    checkedWallets: string[],
+    requestId: number
 }

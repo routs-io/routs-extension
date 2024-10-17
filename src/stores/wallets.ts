@@ -5,7 +5,9 @@ import { Wallet } from "ethers";
 
 export const useWalletsStore = defineStore('wallets', {
     state: (): IWalletsStore => ({
-        wallets: []
+        wallets: [],
+        checkedWallets: [],
+        requestId: 0
     }),
     actions: {
         async saveWallets(privateKeys: string[]) {
@@ -36,10 +38,18 @@ export const useWalletsStore = defineStore('wallets', {
             return new Wallet(wallet.privateKey);
         },
 
-        async refreshWallets() {
+        async refreshWallets(id: number) {
+            console.log('refreshWallets', id);
+            this.requestId = id;
             const { get } = useStorageStore();
             const wallets: { address: string, privateKey: string }[] = await get('wallets');
             this.wallets = wallets.map(w => w.address);
+        },
+
+        async sendWalletsToPage() {
+            console.log('sendWalletsToPage', this.requestId);
+            const response = await chrome.runtime.sendMessage({ id: this.requestId, action: 'getWallets', data: this.checkedWallets, direction: 'out' });  
+            console.log('sendWalletsToPage', response);
         }
     }
 })

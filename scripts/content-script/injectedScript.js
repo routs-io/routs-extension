@@ -2,6 +2,10 @@
     // Define your API
     const RoutsAPI = {
         EXTENSION_ID: 'cdjjadfcddoglhopfjbfbmgocigecbci',
+        navigate: function (targetRoute) {
+            console.log('navigate', targetRoute);
+            window.chrome.runtime.sendMessage(this.EXTENSION_ID, { action: 'navigate', targetRoute });
+        },
         getWallets: async function () {
             const wallets = await window.chrome.runtime.sendMessage(this.EXTENSION_ID, { action: 'getWallets' });
             console.log(wallets);
@@ -17,16 +21,4 @@
 
     // Attach the API to the window object
     window.routs = RoutsAPI;
-
-    // Optionally, set up communication with the content script
-    window.addEventListener('message', function (event) {
-        // We only accept messages from ourselves
-        if (event.source !== window) return;
-
-        if (event.data && event.data.type === 'FROM_PAGE') {
-            // Handle the message and potentially respond
-            const response = RoutsAPI.greet(event.data.name);
-            window.postMessage({ type: 'FROM_EXTENSION', response: response }, '*');
-        }
-    });
 })();

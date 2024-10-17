@@ -2,20 +2,25 @@
 // Imports
 import { onMounted, toRefs } from 'vue'
 import { useWalletsStore } from '@/stores/wallets'
+import WalletItem from '@/components/wallet/WalletItem.vue'
+import AppButton from './app/AppButton.vue'
+import router from '@/router';
 
 const { wallets } = toRefs(useWalletsStore())
-const { refreshWallets } = useWalletsStore()
+const { refreshWallets, sendWalletsToPage } = useWalletsStore()
 
 onMounted(async () => {
-  await refreshWallets()
+  console.log(router.currentRoute.value.query);
+  await refreshWallets(Number(router.currentRoute.value.query.id));
 })
 </script>
 
 <template>
   <div>Wallets</div>
   <div>
-    <div class="wallet" v-for="(wallet, index) in wallets" :key="index">{{ wallet.slice(0, 8) + '...' + wallet.slice(-6) }}</div>  
+    <WalletItem class="wallet" v-for="(wallet, index) in wallets" :key="index" :wallet="wallet" />
   </div>
+  <AppButton @click="sendWalletsToPage" :text="'Connect'" />
 </template>
 
 <style scoped>
