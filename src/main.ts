@@ -22,7 +22,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             break;
         case 'eth_requestAccounts':
             console.log('main.ts', request);
-            router.push({ name: 'wallets', query: { id: request.id } })
+            router.push({ name: 'wallets', query: { id: request.id, method: request.method } })
+            sendResponse({ status: 'success' });
+            break;
+        case 'eth_accounts':
+            console.log('main.ts', request);
+            router.push({ name: 'wallets', query: { id: request.id, method: request.method } })
             sendResponse({ status: 'success' });
             break;
         default:

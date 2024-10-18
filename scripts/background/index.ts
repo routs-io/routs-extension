@@ -1,3 +1,5 @@
+import { ContentMethods } from "../utils/content.js";
+
 const POPUP_WIDTH = 400;
 const POPUP_HEIGHT = 600;
 
@@ -18,9 +20,13 @@ const requests = new Map<number, {
 
 let popup: chrome.windows.Window;
 
-const SUPPORTED_METHODS = [
+const SUPPORTED_POPUP_METHODS = [
     "navigate",
-    "eth_requestAccounts"
+    "eth_requestAccounts",
+]
+
+const SUPPORTED_CONTENT_METHODS = [
+    "eth_accounts"
 ]
 
 function generateId() {
@@ -41,7 +47,7 @@ async function calculatePopupPosition() {
     return { top, left }
 }
 
-async function openPopup() {
+async function openPopup(): Promise<SendMessageResponse> {
     const { top, left } = await calculatePopupPosition();
 
     popup = await chrome.windows.create({
@@ -53,27 +59,42 @@ async function openPopup() {
         left
     });
 
-    console.log(popup);
-    return popup ? true : false;
+    if (popup) {
+        console.log('popup opened')
+        return { status: 'success' };
+    }
+    else {
+        return { status: 'fail' }
+    }
 }
 
 function closePopup() {
     if (popup?.id) chrome.windows.remove(popup.id)
 }
 
-async function openPopupAndSendMessage(message: MessageRequest): Promise<SendMessageResponse | undefined> {
-    if (await openPopup()) {
-        console.log('popup opened')
+async function handlePopupMethod(message: MessageRequest): Promise<SendMessageResponse | undefined> {
+    const popupOpened = await openPopup();
+    if (popupOpened.status === 'fail') {
+        return popupOpened;
     }
-    else {
-        return { status: 'fail' }
+
+    await sendMessage(message);
+}
+
+async function handleContentMethod(message: MessageRequest): Promise<any> {
+    if (message.method in ContentMethods) {
+        return await ContentMethods[message.method as keyof typeof ContentMethods]();
+    } else {
+        throw new Error(`Method ${message.method} not supported`);
     }
+}
+
+async function sendMessage(message: MessageRequest) {
     setTimeout(async () => {
         requests.set(message.id, { request: message, response: undefined });
         await chrome.runtime.sendMessage(message);
         return { status: 'success' };
     }, 500);
-
 }
 
 async function waitForResponse(id: number) {
@@ -81,6 +102,7 @@ async function waitForResponse(id: number) {
         const interval = setInterval(() => {
             const request = requests.get(id);
             if (request?.response) {
+                closePopup();
                 clearInterval(interval);
                 resolve(request.response);
             }
@@ -91,16 +113,37 @@ async function waitForResponse(id: number) {
 chrome.runtime.onMessageExternal.addListener(async function (request, sender, sendResponse) {
     console.log('background.js', request);
     console.log('external', sender);
+
     try {
-        if(!SUPPORTED_METHODS.includes(request.method)) {
+        if (![...SUPPORTED_POPUP_METHODS, ...SUPPORTED_CONTENT_METHODS].includes(request.method)) {
             sendResponse({ status: 'fail', message: 'Method not supported' });
             return;
         }
-        const id = generateId();
-        requests.set(id, { request: undefined, response: undefined });
-        await openPopupAndSendMessage({ id, direction: 'in', ...request });
-        if (requests.get(id)) {
-            sendResponse(await waitForResponse(id));
+
+        console.log('passed supporting check');
+
+        if (SUPPORTED_CONTENT_METHODS.includes(request.method)) {
+            console.log('passed content check');
+
+            const response = await handleContentMethod(request);
+            sendResponse(response);
+            return;
+        }
+
+        if (SUPPORTED_POPUP_METHODS.includes(request.method)) {
+            console.log('passed popup check');
+
+            const id = generateId();
+            requests.set(id, { request: undefined, response: undefined });
+
+            console.log('request generated id', id);
+
+            await handlePopupMethod({ id, direction: 'in', ...request });
+
+            if (requests.get(id)) {
+                sendResponse(await waitForResponse(id));
+            }
+            return;
         }
     }
     catch (error) {
@@ -118,6 +161,5 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
             req.response = request.data;
         }
     }
-    closePopup()
     sendResponse({ status: 'success', data: request.data });
 })
