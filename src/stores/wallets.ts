@@ -48,7 +48,7 @@ export const useWalletsStore = defineStore('wallets', {
 
         async sendWalletsToPage() {
             console.log('sendWalletsToPage', this.requestId);
-            const response = await chrome.runtime.sendMessage({ id: this.requestId, action: 'getWallets', data: this.checkedWallets, direction: 'out' });  
+            const response = await chrome.runtime.sendMessage({ id: this.requestId, method: 'eth_requestAccounts', data: this.checkedWallets, direction: 'out' });  
             console.log('sendWalletsToPage', response);
         }
     }

@@ -1,8 +1,12 @@
 (function () {
+    const EXTENSION_ID = 'cdjjadfcddoglhopfjbfbmgocigecbci'
     // Define your API
     const RoutsAPI = {
-        EXTENSION_ID: 'cdjjadfcddoglhopfjbfbmgocigecbci',
-        navigate: function (targetRoute) {
+        request: function ({method, params}) {
+            const response = window.chrome.runtime.sendMessage(EXTENSION_ID, {method, params})
+            return response;
+        },
+        /*navigate: function (targetRoute) {
             console.log('navigate', targetRoute);
             window.chrome.runtime.sendMessage(this.EXTENSION_ID, { action: 'navigate', targetRoute });
         },
@@ -15,7 +19,7 @@
             console.log('transactions', transactions);
             const signedTransactions = await window.chrome.runtime.sendMessage(this.EXTENSION_ID, { action: 'signTransactions', transactions });
             return signedTransactions;
-        },
+        },*/
         // Add more API methods as needed
     };
 

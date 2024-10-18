@@ -10,7 +10,7 @@ const { wallets } = toRefs(useWalletsStore())
 const { refreshWallets, sendWalletsToPage } = useWalletsStore()
 
 onMounted(async () => {
-  console.log(router.currentRoute.value.query);
+  console.log(router.currentRoute.value.query.id);
   await refreshWallets(Number(router.currentRoute.value.query.id));
 })
 </script>

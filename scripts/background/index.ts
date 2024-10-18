@@ -3,8 +3,9 @@ const POPUP_HEIGHT = 600;
 
 declare type MessageRequest = {
     id: number,
-    action: string,
-} & any;
+    method: string,
+    params: any[]
+};
 
 declare type SendMessageResponse = {
     status: "success" | "fail",
@@ -16,6 +17,11 @@ const requests = new Map<number, {
 }>();
 
 let popup: chrome.windows.Window;
+
+const SUPPORTED_METHODS = [
+    "navigate",
+    "eth_requestAccounts"
+]
 
 function generateId() {
     return Math.floor(Math.random() * 1000000);
@@ -86,27 +92,14 @@ chrome.runtime.onMessageExternal.addListener(async function (request, sender, se
     console.log('background.js', request);
     console.log('external', sender);
     try {
+        if(!SUPPORTED_METHODS.includes(request.method)) {
+            sendResponse({ status: 'fail', message: 'Method not supported' });
+            return;
+        }
         const id = generateId();
         requests.set(id, { request: undefined, response: undefined });
-        console.log(id);
-        switch (request.action) {
-            case 'navigate':
-                console.log('navigate');
-                await openPopupAndSendMessage({ id, action: 'navigate', targetRoute: request.targetRoute, direction: 'in' });
-                break;
-            case 'getWallets':
-                console.log('getWallets');
-                await openPopupAndSendMessage({ id, action: 'getWallets', direction: 'in' });
-                break;
-            /*case 'signTransactions':
-                console.log('signTransactions');
-                sendResponse(await signTransactions(request.transactions));
-                break;*/
-            default:
-                break;
-        }
+        await openPopupAndSendMessage({ id, direction: 'in', ...request });
         if (requests.get(id)) {
-            console.log(requests);
             sendResponse(await waitForResponse(id));
         }
     }

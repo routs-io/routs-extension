@@ -15,12 +15,13 @@ app.use(router)
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     console.log('popup', request);
-    switch (request.action) {
+    switch (request.method) {
         case 'navigate':
-            router.push({ name: request.targetRoute });
+            router.push({ name: request.params[0] });
             sendResponse({ status: 'success' });
             break;
-        case 'getWallets':
+        case 'eth_requestAccounts':
+            console.log('main.ts', request);
             router.push({ name: 'wallets', query: { id: request.id } })
             sendResponse({ status: 'success' });
             break;

@@ -12,8 +12,11 @@ export const useAuthStore = defineStore('auth', {
             this.isRegistered = value;
         },
         async setPassword(password: string): Promise<boolean> {
+            console.log(this.isRegistered);
             const { set } = useStorageStore();
             await set('password', password);
+            this.setIsRegistered(true);
+            this.isLogged = true;
             return true;
         },
         async checkPassword(password: string, updateLogged: boolean = true): Promise<boolean> {
@@ -28,7 +31,9 @@ export const useAuthStore = defineStore('auth', {
         async checkIsRegistered() {
             const { get } = useStorageStore();
             const response = await get('password');
-            this.setIsRegistered(response !== null);
+            console.log(response);
+            this.setIsRegistered(response !== null && typeof response !== 'undefined');
+            console.log(this.isRegistered);
         },
         logout() {
             this.isLogged = false
