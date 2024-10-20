@@ -23,6 +23,7 @@ let popup: chrome.windows.Window;
 const SUPPORTED_POPUP_METHODS = [
     "navigate",
     "eth_requestAccounts",
+    "eth_signTransactions"
 ]
 
 const SUPPORTED_CONTENT_METHODS = [

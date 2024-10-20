@@ -6,9 +6,10 @@ import { useSignStore } from '@/stores/sign'
 import { toRefs } from 'vue'
 
 const { currentStep } = toRefs(useSignStore())
-const { signTransaction } = useSignStore();
+const { signTransaction, addSignedStepToPath } = useSignStore();
 
 const props = defineProps<{
+  id: number,
   service: string
   activity: string
   transaction: ITransaction
@@ -19,9 +20,20 @@ function cancel() {
 }
 
 async function sign() {
-  const signedTransaction = await signTransaction(props.transaction);
-  console.log('signedHash', signedTransaction);
-  currentStep.value++;
+  const signedHash = await signTransaction(props.transaction);
+  console.log('signedHash', signedHash);
+  
+  addSignedStepToPath({
+    id: props.id,
+    service: props.service,
+    activity: props.activity,
+    transactions: [
+      {
+        ...props.transaction,
+        signedHash
+      }
+    ]
+  })
 }
 </script>
 

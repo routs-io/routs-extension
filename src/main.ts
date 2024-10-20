@@ -11,7 +11,8 @@ const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 
-
+import { useSignStore } from './stores/sign';
+const { setTransactions } = useSignStore();
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     console.log('popup', request);
@@ -21,14 +22,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             sendResponse({ status: 'success' });
             break;
         case 'eth_requestAccounts':
-            console.log('main.ts', request);
-            router.push({ name: 'wallets', query: { id: request.id, method: request.method } })
+            router.push({ name: 'wallets', query: { id: request.id } })
             sendResponse({ status: 'success' });
             break;
-        case 'eth_accounts':
-            console.log('main.ts', request);
-            router.push({ name: 'wallets', query: { id: request.id, method: request.method } })
-            sendResponse({ status: 'success' });
+        case 'eth_signTransactions':
+            setTransactions(request.id, request.params);
+            router.push({ name: 'sign' })
             break;
         default:
             sendResponse({ status: 'fail' });

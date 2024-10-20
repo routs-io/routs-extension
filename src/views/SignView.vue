@@ -3,9 +3,10 @@ import TheSign from '@/components/TheSign.vue'
 import { useSignStore } from '@/stores/sign'
 import { toRefs } from 'vue';
 
-const { currentStep } = toRefs(useSignStore())
+const { generateId } = useSignStore();
+const { currentStep, path } = toRefs(useSignStore())
 
-const path = [
+/*const path = [
   {
     activity: 'swap',
     service: 'izumiswap',
@@ -34,11 +35,13 @@ const path = [
       }
     ]
   }
-]
+]*/
 
-const formattedPath = path.map((step) => {
+const formattedPath = path.value.map((step) => {
+  const id = generateId();
   return step.transactions.map((transaction) => {
     return {
+      id,
       activity: step.activity,
       service: step.service,
       transaction: transaction
@@ -52,6 +55,7 @@ const formattedPath = path.map((step) => {
     <TheSign
       v-for="(step, index) in formattedPath"
       :key="index"
+      :id="step.id"
       :service="step.service"
       :activity="step.activity"
       :transaction="step.transaction"

@@ -5,6 +5,22 @@ export interface ITransaction extends TransactionRequest {
     platform: string
 }
 
+export interface IPathStep {
+    activity: string,
+    service: string,
+    transactions: ITransaction[]
+}
+
+export interface ISignedPathStep {
+    id: number,
+    activity: string,
+    service: string,
+    transactions: (ITransaction & { signedHash: string })[]
+}
+
 export interface ISignStore {
-    currentStep: number
+    requestId: number,
+    currentStep: number,
+    path: IPathStep[],
+    signedPath: ISignedPathStep[]
 }
