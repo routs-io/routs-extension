@@ -10,6 +10,7 @@ const { signTransaction, addSignedStepToPath } = useSignStore();
 
 const props = defineProps<{
   id: number,
+  address: string
   service: string
   activity: string
   transaction: ITransaction
@@ -25,6 +26,7 @@ async function sign() {
   
   addSignedStepToPath({
     id: props.id,
+    address: props.address,
     service: props.service,
     activity: props.activity,
     transactions: [

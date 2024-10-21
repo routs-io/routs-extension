@@ -6,6 +6,7 @@ export interface ITransaction extends TransactionRequest {
 }
 
 export interface IPathStep {
+    address: string,
     activity: string,
     service: string,
     transactions: ITransaction[]
@@ -13,6 +14,7 @@ export interface IPathStep {
 
 export interface ISignedPathStep {
     id: number,
+    address: string,
     activity: string,
     service: string,
     transactions: (ITransaction & { signedHash: string })[]
