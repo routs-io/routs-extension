@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import TheAuth from '@/components/TheAuth.vue'
+import TheWallets from '@/components/TheWallets.vue'
 </script>
 
 <template>
   <main>
-    <TheAuth />
+    <TheWallets />
   </main>
 </template>

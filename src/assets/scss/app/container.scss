@@ -1,6 +1,10 @@
 .container {
-  max-width: 350px;
-  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+
+  width: 360px;
+  height: 600px;
   margin: 0 auto;
-  padding: 20px;
+
+  background-color: var(--surface-primary);
 }

@@ -1,49 +1,63 @@
 <script setup lang="ts">
 // Imports
-import { onBeforeMount, ref, toRefs } from 'vue'
-import AppInput from '@/components/app/AppInput.vue'
+import { toRefs, ref, computed, onBeforeMount } from 'vue'
+import AppInput from './app/AppInput.vue'
 import { useAuthStore } from '@/stores/auth'
-import AppButton from './app/AppButton.vue'
 
+// Stores
 const { checkIsRegistered, setPassword, checkPassword, logout } = useAuthStore()
 const { isRegistered, isLogged } = toRefs(useAuthStore())
+
+// Title
+const setTitle = computed<string>(() => {
+  return isRegistered.value ? 'Welcome back!' : isLogged.value ? 'Logged In' : 'Set password'
+})
+
 // Password
 const password = ref<string>('')
 const isWrongPassword = ref<boolean>(false)
 
-async function login() {
-  isWrongPassword.value = !(await checkPassword(password.value))
+async function handleEnter() {
+  if (!password.value) return
+
+  isRegistered.value
+    ? (isWrongPassword.value = !(await checkPassword(password.value)))
+    : await setPassword(password.value)
 }
 
-async function register() {
-  await setPassword(password.value)
-}
-
-onBeforeMount(async () => {
-  await checkIsRegistered()
-})
+onBeforeMount(() => checkIsRegistered)
 </script>
 
 <template>
   <div class="auth">
-    <div class="auth__img">
-      <img src="@/assets/img/logo.svg" alt="logo" />
+    <div class="auth__body">
+      <div class="auth__img">
+        <img src="@/assets/img/logo.svg" alt="logo" />
+      </div>
+
+      <h1 class="auth__title">{{ setTitle }}</h1>
+
+      <AppInput
+        v-if="!isLogged"
+        class="input--lg"
+        :class="{ 'input--error': isWrongPassword }"
+        id="password"
+        type="password"
+        v-model="password"
+        placeholder="Enter password"
+        @keydown.enter="handleEnter"
+      />
     </div>
 
-    <h1 v-if="isRegistered" class="auth__title">Welcome back!</h1>
-    <h1 v-else-if="isLogged" class="auth__title">Logged In</h1>
-    <h1 v-else class="auth__title">Set password</h1>
-
-    <AppInput
+    <button
       v-if="!isLogged"
-      :style="{ color: isWrongPassword ? 'red' : '' }"
-      id="password"
-      v-model="password"
-      label="Password"
-      placeholder="Enter password"
-      @keydown.enter="isRegistered ? login() : register()"
-    />
-    <AppButton v-else class="auth__button" text="Log Out" @click="logout"></AppButton>
+      class="button button--blue button--lg auth__btn"
+      :disabled="!password"
+      @click="handleEnter"
+    >
+      Continue
+    </button>
+    <button v-else class="button button--blue button--lg auth__btn" @click="logout">Log Out</button>
   </div>
 </template>
 

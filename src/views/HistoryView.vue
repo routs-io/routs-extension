@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import TheWallets from '@/components/TheWallets.vue'
+import TheHistory from '@/components/TheHistory.vue'
 </script>
 
 <template>
   <main>
-    <TheWallets />
+    <TheHistory />
   </main>
 </template>

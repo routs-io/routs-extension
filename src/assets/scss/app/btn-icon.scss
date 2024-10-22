@@ -1,0 +1,21 @@
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 2.625rem;
+  height: 2.625rem;
+  border-radius: 0.75rem;
+
+  color: var(--label-primary);
+  background-color: var(--surface-primary);
+
+  transition: var(--ease);
+
+  @media (any-hover: hover) {
+    &:hover {
+      box-shadow: -2px 5px 10px 1px rgba(0, 0, 0, 0.07);
+    }
+  }
+}

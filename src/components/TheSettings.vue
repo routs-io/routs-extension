@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import AppInput from '@/components/app/AppInput.vue'
-import AppButton from '@/components/app/AppButton.vue'
 import { useAuthStore } from '../stores/auth'
 const { checkPassword, setPassword } = useAuthStore()
 
@@ -24,9 +23,9 @@ async function changePassword() {
     alert('Failed to change password')
     return
   }
-  oldPassword.value = '';
-  newPassword.value = '';
-  confirmPassword.value = '';
+  oldPassword.value = ''
+  newPassword.value = ''
+  confirmPassword.value = ''
 }
 </script>
 
@@ -58,7 +57,7 @@ async function changePassword() {
       placeholder="Confirm Password"
       type="password"
     />
-    <AppButton class="confirm-button" text="Confirm" @click="changePassword" />
+    <button class="button confirm-button" @click="changePassword">Confirm</button>
   </div>
 </template>
 

@@ -132,29 +132,27 @@
         border-color: var(--input-border-error);
       }
     }
+  }
 
-    &.input--medium {
-      & .input {
-        &__block:has(input:focus) {
-          outline-color: var(--input-border-error-focus);
-        }
+  &--lg {
+    & .input {
+      &__block {
+        height: 3.375rem;
+        padding: 0 1rem;
+        border-radius: 1rem;
+
+        background-color: var(--surface-primary);
       }
+    }
+
+    input {
+      font-size: 1rem;
     }
   }
 }
 
 @media (max-width: 1024px) {
   .input {
-    &__block {
-      &:has(input:focus) {
-        & .input {
-          &__validation {
-            transform: translateY(-1.25rem);
-          }
-        }
-      }
-    }
-
     &__toggler svg {
       width: 1.25rem;
       height: 1.25rem;

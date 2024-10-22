@@ -1,0 +1,39 @@
+.wallet {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+
+  padding: 0.75rem;
+  border-radius: 1rem;
+
+  background-color: var(--surface-primary);
+  box-shadow: var(--shadow-2);
+
+  &__head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  &__address {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+
+    p {
+      line-height: 140%;
+    }
+  }
+
+  &__tags {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  &__btn {
+    width: 6.25rem;
+  }
+}

@@ -1,20 +1,25 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import AppHeader from '@/components/app/AppHeader.vue'
-import TheAuth from '@/components/TheAuth.vue'
-import { useAuthStore } from '@/stores/auth'
-import { toRefs } from 'vue';
+import { toRefs } from 'vue'
+
+import AppNavigation from './components/app/AppNavigation.vue'
+import TheAuth from './components/TheAuth.vue'
+
+import { useAuthStore } from './stores/auth'
 
 const { isLogged } = toRefs(useAuthStore())
-
 </script>
 
 <template>
   <div class="container">
-    <AppHeader />
+    <!-- <RouterView v-if="isLogged" /> -->
+    <!-- <TheAuth v-else /> -->
 
-    <RouterView v-if="isLogged" />
-    <TheAuth v-else />
+    <!-- TODO: delete when finished -->
+    <!-- <AppNavigation v-if="isLogged" /> -->
+
+    <RouterView />
+    <AppNavigation />
   </div>
 </template>
 

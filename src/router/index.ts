@@ -1,5 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
+import ImportView from '@/views/ImportView.vue'
+import HistoryView from '@/views/HistoryView.vue'
+import SignView from '@/views/SignView.vue'
+import SettingsView from '@/views/SettingsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,22 +16,22 @@ const router = createRouter({
     {
       path: '/import',
       name: 'import',
-      component: () => import('@/views/ImportView.vue')
+      component: ImportView
     },
     {
-      path: '/wallets',
-      name: 'wallets',
-      component: () => import('@/views/WalletsView.vue')
+      path: '/history',
+      name: 'history',
+      component: HistoryView
     },
     {
       path: '/sign',
       name: 'sign',
-      component: () => import('@/views/SignView.vue')
+      component: SignView
     },
     {
       path: '/settings',
       name: 'settings',
-      component: () => import('@/views/SettingsView.vue')
+      component: SettingsView
     }
   ]
 })

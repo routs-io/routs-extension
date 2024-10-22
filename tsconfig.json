@@ -2,9 +2,7 @@
   "compilerOptions": {
     "outDir": "./dist",
     "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    },
+    "paths": { "@/*": ["./src/*"] },
     "esModuleInterop": true,
     "skipLibCheck": true,
     "target": "ESNext",
@@ -19,17 +17,10 @@
     "noImplicitOverride": true,
     "module": "preserve",
     "noEmit": false,
-    "lib": [
-      "ESNext",
-      "dom",
-      "dom.iterable",
-      "webworker"
-    ],
+    "lib": ["ESNext", "dom", "dom.iterable", "webworker"],
     "jsx": "preserve",
     "jsxImportSource": "vue",
-    "types": [
-      "chrome",
-    ],
+    "types": ["chrome"],
     "moduleResolution": "Bundler",
     "useDefineForClassFields": true,
     "noImplicitThis": true,
