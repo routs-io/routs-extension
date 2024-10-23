@@ -15,9 +15,9 @@ const { isLogged } = toRefs(useAuthStore())
     <!-- <RouterView v-if="isLogged" /> -->
     <!-- <TheAuth v-else /> -->
 
-    <!-- TODO: delete when finished -->
     <!-- <AppNavigation v-if="isLogged" /> -->
 
+    <!-- TODO: delete later -->
     <RouterView />
     <AppNavigation />
   </div>

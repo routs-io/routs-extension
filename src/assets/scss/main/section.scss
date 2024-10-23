@@ -5,10 +5,8 @@
 
   height: 100%;
   padding: 1.5rem 1.25rem 1.25rem;
-  overflow-y: auto;
 
   background-color: var(--surface-secondary);
-  scrollbar-width: thin;
 
   &__head {
     display: flex;
@@ -18,5 +16,11 @@
 
     padding-bottom: 1rem;
     border-bottom: 1px solid var(--border-secondary);
+  }
+
+  &__buttons {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
   }
 }

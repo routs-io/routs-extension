@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia'
 import { Wallet } from 'ethers'
-import { useStorageStore } from './storage'
 
 import type { IWalletsStore } from '@/types/wallets'
+
+import { useStorageStore } from '@/stores/storage'
 
 export const useWalletsStore = defineStore('wallets', {
   state: (): IWalletsStore => ({
@@ -10,17 +11,25 @@ export const useWalletsStore = defineStore('wallets', {
     checkedWallets: [],
     requestId: 0
   }),
+
   actions: {
+    shortenAddress(address: string): string {
+      // Example: 0x123456...123456
+      return `${address.substring(0, 8)}...${address.substring(address.length - 6)}`
+    },
+
     async saveWallets(privateKeys: string[]) {
       const { get, set } = useStorageStore()
 
       const walletsInStorage: { address: string; privateKey: string }[] =
         (await get('wallets')) ?? []
+
       console.log('saveWallets 1', walletsInStorage)
       console.log(
         'saveWallets 2',
         privateKeys.map((pk) => ({ address: new Wallet(pk).address, privateKey: pk }))
       )
+
       await set(
         'wallets',
         Array.from(
@@ -32,6 +41,7 @@ export const useWalletsStore = defineStore('wallets', {
           ])
         ).map((w) => JSON.parse(w))
       )
+
       this.wallets = privateKeys.map((pk) => new Wallet(pk).address)
     },
 

@@ -124,36 +124,38 @@ onMounted(() => refreshWallets(Number(router.currentRoute.value.query.id)))
     <div class="section__head">
       <h1>Wallets</h1>
 
-      <button class="btn-icon">
+      <RouterLink v-if="tempList.length" class="btn-icon" to="/import">
         <IconAdd />
-      </button>
+      </RouterLink>
     </div>
 
-    <div class="section__body wallets">
-      <div class="wallets__head">
-        <p>{{ total }}</p>
+    <div class="wallets">
+      <template v-if="tempList.length">
+        <div class="wallets__head">
+          <p>{{ total }}</p>
 
-        <button
-          class="wallets__btn"
-          :class="{ red: !isSomeWalletOffline }"
-          @click="handleConnections"
-        >
-          {{ buttonName }}
-        </button>
-      </div>
+          <button
+            class="button button--xs blue"
+            :class="{ red: !isSomeWalletOffline }"
+            @click="handleConnections"
+          >
+            {{ buttonName }}
+          </button>
+        </div>
 
-      <!-- v-if="wallets.length" -->
-      <template v-if="true">
-        <!-- <WalletsItem
-          class="wallet"
-          v-for="(wallet, i) in wallets"
-          :key="i"
-          :wallet
-        /> -->
-        <WalletsItem v-for="(wallet, i) in tempList" :key="i" :wallet class="wallet" />
+        <div class="wallets__list" :class="{ padding: tempList.length > 5 }">
+          <WalletsItem class="wallet" v-for="(wallet, i) in tempList" :key="i" :wallet />
+        </div>
       </template>
 
-      <h2 v-else>No wallets yet</h2>
+      <!-- Empty -->
+      <div v-else class="wallets__plug">
+        <img class="wallets__img" src="@/assets/img/wallet.svg" alt="wallet" />
+        <h2 class="wallets__title">No wallets</h2>
+        <p class="wallets__text">You haven’t add any wallets yet.</p>
+
+        <RouterLink class="button button--blue button--md" to="/import">Add</RouterLink>
+      </div>
     </div>
   </section>
 </template>

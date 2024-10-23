@@ -2,13 +2,13 @@
 import { computed } from 'vue'
 import type { IWallet } from '@/types/wallets'
 
+import { useWalletsStore } from '@/stores/wallets'
+
+const { shortenAddress } = useWalletsStore()
+
 const props = defineProps<{
   wallet: IWallet
 }>()
-
-const shortAddress = computed<string>(() => {
-  return `${props.wallet.address.substring(0, 8)}...${props.wallet.address.substring(props.wallet.address.length - 6)}`
-})
 
 const buttonName = computed<string>(() => {
   return props.wallet.status === 'online' ? 'Disconnect' : 'Connect'
@@ -28,7 +28,7 @@ function handleConnection() {
     <div class="wallet__head">
       <div class="wallet__address">
         <span class="status" :class="`status--${wallet.status}`" />
-        <p>{{ shortAddress }}</p>
+        <p>{{ shortenAddress(wallet.address) }}</p>
       </div>
 
       <div v-if="wallet.tags.length" class="wallet__tags">
