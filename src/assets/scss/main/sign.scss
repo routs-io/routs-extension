@@ -1,0 +1,57 @@
+.sign {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  height: 100%;
+  padding: 1.25rem 1rem;
+  border-radius: 1rem;
+
+  background-color: var(--surface-primary);
+
+  &__amount {
+    font-size: 0.75rem;
+    line-height: 140%;
+    text-align: center;
+    color: var(--label-tertiary);
+  }
+
+  &__transactions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    width: 1.75rem;
+    height: 3rem;
+    border-radius: 0.5rem;
+
+    background-color: var(--surface-secondary);
+    transition: var(--ease);
+
+    &:hover {
+      background-color: var(--surface-tertiary);
+    }
+
+    &--prev {
+      transform: rotate(180deg);
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  }
+
+  &__buttons {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: 0.625rem;
+  }
+}

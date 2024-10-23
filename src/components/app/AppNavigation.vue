@@ -21,11 +21,6 @@ const nav: INav[] = [
   },
   {
     icon: IconWallet,
-    name: 'Import',
-    link: '/import'
-  },
-  {
-    icon: IconWallet,
     name: 'Wallets',
     link: '/'
   },
@@ -44,7 +39,7 @@ const nav: INav[] = [
 
 <template>
   <nav class="nav">
-    <ul class="nav__nav">
+    <ul class="nav__list">
       <RouterLink v-for="item in nav" :key="item.name" class="nav__item" :to="item.link">
         <component :is="item.icon" />
         {{ item.name }}
