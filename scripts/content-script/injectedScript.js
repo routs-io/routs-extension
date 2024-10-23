@@ -1,5 +1,5 @@
 ;(function () {
-  const EXTENSION_ID = 'hhdchmacfdocbjihmcidlnlgbmnpjala'
+  const EXTENSION_ID = 'cdjjadfcddoglhopfjbfbmgocigecbci'
   // Define your API
   const RoutsAPI = {
     request: function ({ method, params }) {

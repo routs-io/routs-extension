@@ -1,7 +1,6 @@
 import type { IPathStep, ISignedPathStep, ISignStore, ITransaction } from "@/types/sign";
 import { defineStore } from "pinia"
-import { useStorageStore } from "./storage";
-import { Wallet } from "ethers";
+import { useWalletsStore } from "./wallets";
 
 export const useSignStore = defineStore('sign', {
     state: (): ISignStore => ({
@@ -19,15 +18,10 @@ export const useSignStore = defineStore('sign', {
             if (!transaction.from || !transaction.to || !transaction.data) {
                 throw new Error("Invalid transaction data")
             }
-            const { get } = useStorageStore();
-            const wallets: { address: string, privateKey: string }[] = await get('wallets') ?? [];
-            console.log(wallets);
-            const wallet = wallets.filter(w => w.address.toLowerCase() === transaction.from?.toString().toLowerCase())[0];
-            if (!wallet) {
-                throw new Error("Wallet not imported")
-            }
 
-            const signer = new Wallet(wallet.privateKey);
+            const { getSignerByAddress } = useWalletsStore();
+
+            const signer = await getSignerByAddress(transaction.from.toString());
             const signedTransaction = await signer.signTransaction(transaction);
             return signedTransaction;
         },

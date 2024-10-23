@@ -2,43 +2,49 @@ import { defineStore } from 'pinia'
 import { Wallet } from 'ethers'
 import { useStorageStore } from './storage'
 
-import type { IWalletsStore } from '@/types/wallets'
+import type { IStoredWallet, IWallet, IWalletsStore } from '@/types/wallets'
 
 export const useWalletsStore = defineStore('wallets', {
   state: (): IWalletsStore => ({
     wallets: [],
-    checkedWallets: [],
     requestId: 0
   }),
   actions: {
     async saveWallets(privateKeys: string[]) {
       const { get, set } = useStorageStore()
 
-      const walletsInStorage: { address: string; privateKey: string }[] =
+      const walletsInStorage: IStoredWallet[] =
         (await get('wallets')) ?? []
-      console.log('saveWallets 1', walletsInStorage)
-      console.log(
-        'saveWallets 2',
-        privateKeys.map((pk) => ({ address: new Wallet(pk).address, privateKey: pk }))
-      )
+
       await set(
         'wallets',
         Array.from(
           new Set([
             ...walletsInStorage.map((w) => JSON.stringify(w)),
             ...privateKeys.map((pk) =>
-              JSON.stringify({ address: new Wallet(pk).address, privateKey: pk })
+              JSON.stringify({ address: new Wallet(pk).address, privateKey: pk, tags: [] })
             )
           ])
         ).map((w) => JSON.parse(w))
       )
-      this.wallets = privateKeys.map((pk) => new Wallet(pk).address)
+      this.wallets = privateKeys.map((pk) => ({ address: new Wallet(pk).address, tags: [], status: 'offline' }))
     },
 
-    async getWalletByAddress(address: string): Promise<Wallet> {
+    async handleConnection(wallet: IWallet) {
+      const { get, set } = useStorageStore()
+
+      this.wallets[this.wallets.indexOf(wallet)].status = wallet.status === 'offline' ? 'online' : 'offline';
+      const wallets: IWallet[] = await get('connectedWallets') ?? []
+      const newWallets = wallets.map(w => w.address.toLowerCase()).includes(wallet.address.toLowerCase())
+        ? wallets.filter(w => w.address.toLowerCase() !== wallet.address.toLowerCase())
+        : [...wallets, wallet];
+      await set('connectedWallets', newWallets);
+    },
+
+    async getSignerByAddress(address: string): Promise<Wallet> {
       const { get } = useStorageStore()
-      const wallets: { address: string; privateKey: string }[] = await get('wallets')
-      const wallet = wallets.find((w) => w.address === address)
+      const wallets: IStoredWallet[] = await get('wallets')
+      const wallet = wallets.find((w) => w.address.toLowerCase() === address.toLowerCase())
       if (!wallet) {
         throw new Error('Wallet not found')
       }
@@ -49,19 +55,27 @@ export const useWalletsStore = defineStore('wallets', {
       console.log('refreshWallets', id)
       this.requestId = id
       const { get } = useStorageStore()
-      const wallets: { address: string; privateKey: string }[] = await get('wallets')
-      this.wallets = wallets.map((w) => w.address)
+      const wallets: IStoredWallet[] = await get('wallets')
+      const connectedWallets: IWallet[] = await get('connectedWallets') ?? [];
+
+      console.log(wallets, connectedWallets);
+
+      this.wallets = wallets.map((w) => ({
+        address: w.address,
+        tags: w.tags ?? [],
+        status: connectedWallets.map(w => w.address.toLowerCase()).includes(w.address.toLowerCase()) ? 'online' : 'offline'
+      }))
     },
 
     async sendWalletsToPage() {
       const { set } = useStorageStore()
 
-      await set('checkedWallets', Array.from(this.wallets))
+      await set('connectedWallets', Array.from(this.wallets.filter(w => w.status === 'online')))
 
       await chrome.runtime.sendMessage({
         id: this.requestId,
         method: 'eth_requestAccounts',
-        data: this.checkedWallets,
+        data: this.wallets.filter(w => w.status === 'online'),
         direction: 'out'
       })
     }

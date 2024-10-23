@@ -3,7 +3,7 @@
 import { onMounted, toRefs, computed } from 'vue'
 import router from '@/router'
 
-import type { IWallet } from '@/types/wallets.ts'
+//import type { IWallet } from '@/types/wallets.ts'
 
 import WalletsItem from '@/components/WalletsItem.vue'
 import IconAdd from '@/components/icons/IconAdd.vue'
@@ -13,99 +13,17 @@ import { useWalletsStore } from '@/stores/wallets'
 const { wallets } = toRefs(useWalletsStore())
 const { refreshWallets, sendWalletsToPage } = useWalletsStore()
 
-// TODO: delete later
-const tempList: IWallet[] = [
-  {
-    address: '0x99dfe571bad692bad7a3a549a15d2c94acd864f1',
-    tags: [
-      {
-        id: 24,
-        name: 'solana',
-        color: 'red'
-      },
-      {
-        id: 52,
-        name: '1122',
-        color: 'orange'
-      }
-    ],
-    status: 'offline'
-  },
-  {
-    address: '0xe6158a8fec9257a00b0ee3fff10555172744ddd9',
-    tags: [
-      {
-        id: 86,
-        name: 'Routs extention',
-        color: 'blue'
-      },
-      {
-        id: 48,
-        name: 'some tag',
-        color: 'purple'
-      },
-      {
-        id: 24,
-        name: 'solana',
-        color: 'red'
-      },
-      {
-        id: 52,
-        name: '1122',
-        color: 'orange'
-      }
-    ],
-    status: 'online'
-  },
-  {
-    address: '0x99dfe571bad692bad7a3a549a15d2c94acd864f1',
-    tags: [],
-    status: 'offline'
-  },
-  {
-    address: '0xe6158a8fec9257a00b0ee3fff10555172744ddd9',
-    tags: [
-      {
-        id: 48,
-        name: 'some tag',
-        color: 'purple'
-      }
-    ],
-    status: 'online'
-  },
-  {
-    address: '0x99dfe571bad692bad7a3a549a15d2c94acd864f1',
-    tags: [],
-    status: 'offline'
-  },
-  {
-    address: '0xe6158a8fec9257a00b0ee3fff10555172744ddd9',
-    tags: [],
-    status: 'online'
-  },
-  {
-    address: '0x99dfe571bad692bad7a3a549a15d2c94acd864f1',
-    tags: [],
-    status: 'offline'
-  },
-  {
-    address: '0xe6158a8fec9257a00b0ee3fff10555172744ddd9',
-    tags: [],
-    status: 'online'
-  }
-]
-
 const total = computed<string>(() => {
-  const connected = tempList.filter((el) => el.status === 'online').length
-  return `${tempList.length} total, ${connected} connected`
+  const connected = wallets.value.filter((el) => el.status === 'online').length
+  return `${wallets.value.length} total, ${connected} connected`
 })
 
 const isSomeWalletOffline = computed<boolean>(() => {
-  return tempList.some((el) => el.status === 'offline')
+  return wallets.value.some((el) => el.status === 'offline')
 })
 
 const buttonName = computed<string>(() => {
-  return isSomeWalletOffline.value ? 'Connect all' : 'Disonnect all'
+  return isSomeWalletOffline.value ? 'Connect all' : 'Disconnect all'
 })
 
 function handleConnections() {
@@ -116,7 +34,7 @@ function handleConnections() {
   }
 }
 
-onMounted(() => refreshWallets(Number(router.currentRoute.value.query.id)))
+onMounted(async () => await refreshWallets(Number(router.currentRoute.value.query.id)))
 </script>
 
 <template>
@@ -150,7 +68,7 @@ onMounted(() => refreshWallets(Number(router.currentRoute.value.query.id)))
           :key="i"
           :wallet
         /> -->
-        <WalletsItem v-for="(wallet, i) in tempList" :key="i" :wallet class="wallet" />
+        <WalletsItem v-for="(wallet, i) in wallets" :key="i" :wallet class="wallet" />
       </template>
 
       <h2 v-else>No wallets yet</h2>

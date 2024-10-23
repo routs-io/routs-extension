@@ -1,10 +1,15 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { IWallet } from '@/types/wallets'
+import { useWalletsStore } from '@/stores/wallets';
+
+const { handleConnection } = useWalletsStore();
 
 const props = defineProps<{
   wallet: IWallet
 }>()
+
+console.log(props.wallet);
 
 const shortAddress = computed<string>(() => {
   return `${props.wallet.address.substring(0, 8)}...${props.wallet.address.substring(props.wallet.address.length - 6)}`
@@ -14,12 +19,8 @@ const buttonName = computed<string>(() => {
   return props.wallet.status === 'online' ? 'Disconnect' : 'Connect'
 })
 
-function handleConnection() {
-  if (props.wallet.status === 'online') {
-    console.log('disconnect')
-  } else {
-    console.log('connect')
-  }
+async function handleWalletConnection() {
+  await handleConnection(props.wallet);
 }
 </script>
 
@@ -41,7 +42,7 @@ function handleConnection() {
     <button
       class="button wallet__btn"
       :class="{ 'button--red': wallet.status === 'online' }"
-      @click="handleConnection"
+      @click="handleWalletConnection"
     >
       {{ buttonName }}
     </button>

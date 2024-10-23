@@ -1,6 +1,5 @@
 export interface IWalletsStore {
-  wallets: string[]
-  checkedWallets: string[]
+  wallets: IWallet[]
   requestId: number
 }
 
@@ -8,6 +7,12 @@ export interface IWallet {
   address: string
   tags: ITag[]
   status: 'online' | 'offline'
+}
+
+export interface IStoredWallet {
+  address: string
+  privateKey: string
+  tags: ITag[]
 }
 
 export interface ITag {
