@@ -5,12 +5,12 @@ import AppInput from './app/AppInput.vue'
 import { useAuthStore } from '@/stores/auth'
 
 // Stores
-const { checkIsRegistered, setPassword, checkPassword, logout } = useAuthStore()
-const { isRegistered, isLogged } = toRefs(useAuthStore())
+const { checkIsRegistered, setPassword, checkPassword } = useAuthStore()
+const { isRegistered } = toRefs(useAuthStore())
 
 // Title
 const setTitle = computed<string>(() => {
-  return isRegistered.value ? 'Welcome back!' : isLogged.value ? 'Logged In' : 'Set password'
+  return isRegistered.value ? 'Welcome back!' : 'Set password'
 })
 
 // Password
@@ -25,7 +25,7 @@ async function handleEnter() {
     : await setPassword(password.value)
 }
 
-onBeforeMount(() => checkIsRegistered)
+onBeforeMount(async () => await checkIsRegistered())
 </script>
 
 <template>
@@ -38,7 +38,6 @@ onBeforeMount(() => checkIsRegistered)
       <h1 class="auth__title">{{ setTitle }}</h1>
 
       <AppInput
-        v-if="!isLogged"
         class="input--lg"
         :class="{ 'input--error': isWrongPassword }"
         id="password"
@@ -50,14 +49,12 @@ onBeforeMount(() => checkIsRegistered)
     </div>
 
     <button
-      v-if="!isLogged"
       class="button button--blue button--lg auth__btn"
       :disabled="!password"
       @click="handleEnter"
     >
       Continue
     </button>
-    <button v-else class="button button--blue button--lg auth__btn" @click="logout">Log Out</button>
   </div>
 </template>
 

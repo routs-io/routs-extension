@@ -5,38 +5,51 @@ import type { IAuthStore } from '@/types/auth'
 export const useAuthStore = defineStore('auth', {
   state: (): IAuthStore => ({
     isRegistered: false,
-    isLogged: false
+    isLocked: true,
+    isExternalRequest: false
   }),
   actions: {
     setIsRegistered(value: boolean) {
       this.isRegistered = value
     },
+
     async setPassword(password: string): Promise<boolean> {
       console.log(this.isRegistered)
       const { set } = useStorageStore()
       await set('password', password)
       this.setIsRegistered(true)
-      this.isLogged = true
+      this.isLocked = true
       return true
     },
-    async checkPassword(password: string, updateLogged: boolean = true): Promise<boolean> {
+
+    async checkPassword(password: string): Promise<boolean> {
       if (!this.isRegistered) {
         return false
       }
       const { get } = useStorageStore()
       const response = await get('password')
-      if (updateLogged) password === response ? (this.isLogged = true) : (this.isLogged = false)
+      await this.updateIsLocked(password === response)
       return password === response
     },
+
     async checkIsRegistered() {
       const { get } = useStorageStore()
       const response = await get('password')
-      console.log(response)
+
       this.setIsRegistered(response !== null && typeof response !== 'undefined')
-      console.log(this.isRegistered)
     },
-    logout() {
-      this.isLogged = false
+
+    async updateIsLocked(locked: boolean) {
+      this.isLocked = locked;
+      const { set } = useStorageStore()
+      await set('isLocked', locked);
+    },
+
+    async checkIsLocked() {
+      const { get } = useStorageStore()
+      const response = await get('isLocked')
+
+      this.isLocked = response ?? true
     }
   }
 })

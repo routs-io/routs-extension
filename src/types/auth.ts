@@ -1,4 +1,5 @@
 export interface IAuthStore {
     isRegistered: boolean,
-    isLogged: boolean
+    isLocked: boolean,
+    isExternalRequest: boolean
 }

@@ -40,7 +40,7 @@ function checkValidation() {
 }
 
 async function changePassword() {
-  const isCorrectPassword = await checkPassword(oldPassword.value, false)
+  const isCorrectPassword = await checkPassword(oldPassword.value)
 
   if (!isCorrectPassword) {
     alert('Incorrect password')

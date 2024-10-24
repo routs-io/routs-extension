@@ -1,6 +1,6 @@
 import './assets/scss/main.scss'
 
-import { createApp } from 'vue'
+import { createApp, toRefs } from 'vue'
 import { createPinia } from 'pinia'
 
 import App from './App.vue'
@@ -12,10 +12,13 @@ app.use(createPinia())
 app.use(router)
 
 import { useSignStore } from './stores/sign'
+import { useAuthStore } from './stores/auth'
 const { setTransactions } = useSignStore()
+const { isExternalRequest } = toRefs(useAuthStore());
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     console.log('popup', request)
+    isExternalRequest.value = true;
     switch (request.method) {
         case 'navigate':
             router.push({ name: request.params[0] })

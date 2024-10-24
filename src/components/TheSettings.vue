@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, toRefs } from 'vue'
 
 import AppCheckbox from '@/components/app/AppCheckbox.vue'
 import IconArrowShort from '@/components/icons/IconArrowShort.vue'
 import IconLocker from '@/components/icons/IconLocker.vue'
 import SettingsPassword from '@/components/SettingsPassword.vue'
+import { useAuthStore } from '@/stores/auth'
 
-const isLocked = ref<boolean>(false)
+const { isLocked } = toRefs(useAuthStore())
+const { updateIsLocked } = useAuthStore()
 const isPasswordShown = ref<boolean>(false)
 
 function showPassword() {
@@ -19,6 +21,10 @@ function closePassword() {
 
 function updateExtension() {
   console.log('updateExtension')
+}
+
+async function updateLock() {
+  await updateIsLocked(!isLocked.value);
 }
 </script>
 
@@ -33,7 +39,7 @@ function updateExtension() {
       <div class="settings__row">
         <p class="settings__text">Lock extension</p>
         <IconLocker class="settings__icon" />
-        <AppCheckbox class="checkbox--switcher" id="lock-extension" v-model="isLocked" />
+        <AppCheckbox class="checkbox--switcher" id="lock-extension" @on-change="updateLock" />
       </div>
 
       <!-- Password -->
