@@ -7,7 +7,6 @@ import { useStorageStore } from '@/stores/storage'
 
 export const useWalletsStore = defineStore('wallets', {
   state: (): IWalletsStore => ({
-    // TODO: delete later
     wallets: [],
     requestId: 0
   }),
