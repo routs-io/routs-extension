@@ -18,10 +18,8 @@
   background-color: var(--surface-secondary);
   transition: var(--ease);
 
-  @media (any-hover: hover) {
-    &:hover {
-      background-color: var(--surface-quaternary);
-    }
+  &:hover {
+    background-color: var(--surface-quaternary);
   }
 
   &:disabled {
@@ -69,14 +67,22 @@
     font-size: 1rem;
   }
 
+  &--outline {
+    background-color: transparent;
+    border: 1px solid var(--border-primary);
+
+    &:hover {
+      background-color: transparent;
+      border-color: var(--border-hover);
+    }
+  }
+
   &--blue {
     color: var(--button-label-primary);
     background-color: var(--button-default);
 
-    @media (any-hover: hover) {
-      &:hover {
-        background-color: var(--button-hover);
-      }
+    &:hover {
+      background-color: var(--button-hover);
     }
   }
 
@@ -84,10 +90,8 @@
     color: var(--label-error);
     background-color: var(--red-5);
 
-    @media (any-hover: hover) {
-      &:hover {
-        background-color: var(--red-10);
-      }
+    &:hover {
+      background-color: var(--red-10);
     }
   }
 }

@@ -2,12 +2,15 @@
 import { computed } from 'vue'
 import type { IWallet } from '@/types/wallets'
 
+import AppCheckbox from '@/components/app/AppCheckbox.vue'
+
 import { useWalletsStore } from '@/stores/wallets'
 
 const { shortenAddress, handleConnection } = useWalletsStore()
 
 const props = defineProps<{
   wallet: IWallet
+  hasCheckbox?: boolean
 }>()
 
 const buttonName = computed<string>(() => {
@@ -15,15 +18,17 @@ const buttonName = computed<string>(() => {
 })
 
 async function handleWalletConnection() {
-  await handleConnection(props.wallet);
+  await handleConnection(props.wallet)
 }
 </script>
 
 <template>
   <div class="wallet">
+    <AppCheckbox v-if="hasCheckbox" :id="`checkbox-${wallet.address}`" v-model="wallet.checked" />
+
     <div class="wallet__head">
       <div class="wallet__address">
-        <span class="status" :class="`status--${wallet.status}`" />
+        <span v-if="!hasCheckbox" class="status" :class="`status--${wallet.status}`" />
         <p>{{ shortenAddress(wallet.address) }}</p>
       </div>
 
