@@ -32,7 +32,8 @@ async function connect() {
     await sendWalletsToPage(true)
   } else {
     // All
-    console.log('connect all', wallets.value)
+    wallets.value.forEach((wallet) => (wallet.checked = true))
+    await sendWalletsToPage(true)
   }
 }
 
@@ -49,7 +50,7 @@ onMounted(async () => {
     </div>
 
     <div class="wallets">
-      <div class="wallets__list">
+      <div class="wallets__list" v-if="disconnectedWallets.length">
         <WalletsItem
           v-for="(wallet, i) in disconnectedWallets"
           :key="i"
@@ -57,6 +58,9 @@ onMounted(async () => {
           :wallet
           has-checkbox
         />
+      </div>
+      <div class="wallets__list" v-else>
+        All wallets connected to the Routs
       </div>
     </div>
 

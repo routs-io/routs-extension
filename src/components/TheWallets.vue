@@ -8,7 +8,7 @@ import IconAdd from '@/components/icons/IconAdd.vue'
 import { useWalletsStore } from '@/stores/wallets'
 
 const { wallets } = toRefs(useWalletsStore())
-const { refreshWallets } = useWalletsStore()
+const { refreshWallets, connectAll, disconnectAll } = useWalletsStore()
 
 const total = computed<string>(() => {
   const connected = wallets.value.filter((el) => el.status === 'online').length
@@ -23,11 +23,11 @@ const buttonName = computed<string>(() => {
   return isSomeWalletOffline.value ? 'Connect all' : 'Disconnect all'
 })
 
-function handleConnections() {
+async function handleConnections() {
   if (isSomeWalletOffline.value) {
-    //sendWalletsToPage()
+    await connectAll()
   } else {
-    console.log('Disconnect all')
+    await disconnectAll()
   }
 }
 

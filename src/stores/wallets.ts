@@ -56,6 +56,22 @@ export const useWalletsStore = defineStore('wallets', {
       await set('connectedWallets', newWallets)
     },
 
+    async connectAll() {
+      const { set } = useStorageStore()
+
+      this.wallets.forEach(wallet => wallet.status = 'online')
+
+      await set('connectedWallets', Array.from(this.wallets))
+    },
+
+    async disconnectAll() {
+      const { set } = useStorageStore()
+
+      this.wallets.forEach(wallet => wallet.status = 'offline')
+
+      await set('connectedWallets', [])
+    },
+
     async getSignerByAddress(address: string): Promise<Wallet> {
       const { get } = useStorageStore()
       const wallets: IStoredWallet[] = await get('wallets')
@@ -91,6 +107,7 @@ export const useWalletsStore = defineStore('wallets', {
 
       if (useChecked) {
         this.wallets = await Promise.all(this.wallets.map(async (wallet) => {
+          if(wallet.status === 'online') return wallet;
           await this.handleConnection(wallet, wallet.checked)
           return wallet;
         }))
