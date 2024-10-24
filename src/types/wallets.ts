@@ -7,6 +7,7 @@ export interface IWallet {
   address: string
   tags: ITag[]
   status: 'online' | 'offline'
+  checked?: boolean
 }
 
 export interface IStoredWallet {

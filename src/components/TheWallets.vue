@@ -61,7 +61,7 @@ onMounted(async () => await refreshWallets(Number(router.currentRoute.value.quer
           </button>
         </div>
 
-        <div class="wallets__list" :class="{ padding: wallets.length > 5 }">
+        <div class="wallets__list">
           <WalletsItem class="wallet" v-for="(wallet, i) in wallets" :key="i" :wallet />
         </div>
       </template>

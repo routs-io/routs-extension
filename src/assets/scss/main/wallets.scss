@@ -20,12 +20,10 @@
     flex-direction: column;
     gap: 0.75rem;
 
-    overflow-y: auto;
-    scrollbar-width: thin;
+    padding-bottom: 1.25rem;
 
-    &.padding {
-      padding-right: 0.5rem;
-    }
+    overflow-y: auto;
+    scrollbar-width: none;
   }
 
   &__plug {

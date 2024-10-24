@@ -1,9 +1,9 @@
 .import {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
 
   height: 100%;
+  min-height: 0;
 
   label {
     padding-left: 0.375rem;
@@ -28,5 +28,38 @@
       line-height: 140%;
       color: var(--label-tertiary);
     }
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    margin-top: 1rem;
+    padding-bottom: 1rem;
+
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+
+  &__wallet {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+
+    padding: 0.625rem 0.75rem;
+    border-radius: 0.75rem;
+
+    background-color: var(--surface-primary);
+    box-shadow: var(--shadow-2);
+
+    &.failed {
+      color: var(--label-error);
+    }
+  }
+
+  &__logo {
+    width: 1rem;
+    height: 1rem;
   }
 }
