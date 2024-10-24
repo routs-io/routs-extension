@@ -18,7 +18,7 @@ export const useAuthStore = defineStore('auth', {
       const { set } = useStorageStore()
       await set('password', password)
       this.setIsRegistered(true)
-      this.isLocked = true
+      await this.updateIsLocked(false)
       return true
     },
 
@@ -28,7 +28,7 @@ export const useAuthStore = defineStore('auth', {
       }
       const { get } = useStorageStore()
       const response = await get('password')
-      await this.updateIsLocked(password === response)
+      await this.updateIsLocked(password !== response)
       return password === response
     },
 

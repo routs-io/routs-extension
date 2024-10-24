@@ -18,7 +18,7 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <div v-if="isLocked" class="container">
+  <div v-if="!isLocked" class="container">
     <RouterView />
     <AppNavigation v-if="!isExternalRequest" />
   </div>

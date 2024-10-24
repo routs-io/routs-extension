@@ -11,7 +11,5 @@
     }
   };
 
-  console.log(window.chrome.runtime);
-
   window.routs = RoutsAPI;
 })();
