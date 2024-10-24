@@ -22,7 +22,7 @@ const { setTransactions } = useSignStore()
 //             sendResponse({ status: 'success' })
 //             break
 //         case 'eth_requestAccounts':
-//             router.push({ name: 'home', query: { id: request.id } })
+//             router.push({ name: 'connect', query: { id: request.id } })
 //             sendResponse({ status: 'success' })
 //             break
 //         case 'eth_signTransactions':

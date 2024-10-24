@@ -1,9 +1,6 @@
 <script setup lang="ts">
 // Imports
 import { onMounted, toRefs, computed } from 'vue'
-import router from '@/router'
-
-//import type { IWallet } from '@/types/wallets.ts'
 
 import WalletsItem from '@/components/WalletsItem.vue'
 import IconAdd from '@/components/icons/IconAdd.vue'
@@ -11,7 +8,7 @@ import IconAdd from '@/components/icons/IconAdd.vue'
 import { useWalletsStore } from '@/stores/wallets'
 
 const { wallets } = toRefs(useWalletsStore())
-const { refreshWallets, sendWalletsToPage } = useWalletsStore()
+const { refreshWallets } = useWalletsStore()
 
 const total = computed<string>(() => {
   const connected = wallets.value.filter((el) => el.status === 'online').length
@@ -28,13 +25,13 @@ const buttonName = computed<string>(() => {
 
 function handleConnections() {
   if (isSomeWalletOffline.value) {
-    sendWalletsToPage()
+    //sendWalletsToPage()
   } else {
     console.log('Disconnect all')
   }
 }
 
-onMounted(async () => await refreshWallets(Number(router.currentRoute.value.query.id)))
+onMounted(async () => await refreshWallets(0))
 </script>
 
 <template>

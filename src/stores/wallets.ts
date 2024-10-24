@@ -7,7 +7,6 @@ import { useStorageStore } from '@/stores/storage'
 
 export const useWalletsStore = defineStore('wallets', {
   state: (): IWalletsStore => ({
-    // TODO: delete later
     wallets: [],
     requestId: 0
   }),
@@ -41,11 +40,13 @@ export const useWalletsStore = defineStore('wallets', {
       }))
     },
 
-    async handleConnection(wallet: IWallet) {
+    async handleConnection(wallet: IWallet, status?: boolean) {
       const { get, set } = useStorageStore()
 
-      this.wallets[this.wallets.indexOf(wallet)].status =
-        wallet.status === 'offline' ? 'online' : 'offline'
+      this.wallets[this.wallets.indexOf(wallet)].status = typeof status !== 'undefined'
+        ? (status ? 'online' : 'offline') :
+        (wallet.status === 'offline' ? 'online' : 'offline')
+
       const wallets: IWallet[] = (await get('connectedWallets')) ?? []
       const newWallets = wallets
         .map((w) => w.address.toLowerCase())
@@ -85,8 +86,15 @@ export const useWalletsStore = defineStore('wallets', {
       }))
     },
 
-    async sendWalletsToPage() {
+    async sendWalletsToPage(useChecked: boolean = false) {
       const { set } = useStorageStore()
+
+      if (useChecked) {
+        this.wallets = await Promise.all(this.wallets.map(async (wallet) => {
+          await this.handleConnection(wallet, wallet.checked)
+          return wallet;
+        }))
+      }
 
       await set('connectedWallets', Array.from(this.wallets.filter((w) => w.status === 'online')))
 

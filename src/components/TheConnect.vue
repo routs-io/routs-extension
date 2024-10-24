@@ -4,8 +4,10 @@ import type { IWallet } from '@/types/wallets'
 
 import WalletsItem from '@/components/WalletsItem.vue'
 import { useWalletsStore } from '@/stores/wallets'
+import router from '@/router';
 
 const { wallets } = toRefs(useWalletsStore())
+const { sendWalletsToPage, refreshWallets } = useWalletsStore()
 
 // Computed
 const disconnectedWallets = computed<IWallet[]>(() => {
@@ -21,24 +23,22 @@ const buttonName = computed<string>(() => {
 })
 
 // Connection
-function cancel() {
-  wallets.value.forEach((wallet) => (wallet.checked = false))
-  console.log('cancel')
+async function cancel() {
+  await sendWalletsToPage(false)
 }
 
-function connect() {
+async function connect() {
   if (isSomeChecked.value) {
-    // Selected
-    const selectedWallets = wallets.value.filter(({ checked }) => checked)
-    console.log('connect selected', selectedWallets)
+    await sendWalletsToPage(true)
   } else {
     // All
     console.log('connect all', wallets.value)
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
   wallets.value.forEach((wallet) => (wallet.checked = true))
+  await refreshWallets(Number(router.currentRoute.value.query.id))
 })
 </script>
 
