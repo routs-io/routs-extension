@@ -1,4 +1,5 @@
 import type {
+    IIncomingPathStep,
     IPathStep,
     ISignStore,
     ITransaction,
@@ -14,8 +15,8 @@ export const useSignStore = defineStore('sign', {
     }),
 
     actions: {
-        generateId(): number {
-            return Math.floor(Math.random() * 1000000)
+        generateId(index: number): string {
+            return `${index}-${Math.floor(Math.random() * 1000000)}`
         },
 
         async signTransaction(transaction: ITransaction): Promise<string> {
@@ -30,48 +31,57 @@ export const useSignStore = defineStore('sign', {
             return signedTransaction;
         },
 
-        setTransactions(requestId: number, path: IPathStep[]) {
+        setTransactions(requestId: number, path: IIncomingPathStep[]) {
             this.requestId = requestId
-            this.path = path.map(p => { p.id = this.generateId(); return p; })
+            this.path = path.map((step, index) => {
+                const id = this.generateId(index)
+                return step.transactions.map((transaction) => {
+                    return {
+                        id,
+                        address: step.address,
+                        activity: step.activity,
+                        service: step.service,
+                        transaction: transaction
+                    }
+                })
+            }).flat()
+
         },
 
-        addSignedStepToPath(step: IPathStep) {
-            //   const index = this.signedPath.map((p) => p.id).indexOf(step.id)
-            //   if (index === -1) {
-            //     this.signedPath.push(step)
-            //   } else {
-            //     this.signedPath[index].transactions.push(...step.transactions)
-            //   }
-            //   this.currentStep++
-            //   if (
-            //     this.currentStep >= this.path.map((p) => p.transactions.length).reduce((a, b) => a + b, 0)
-            //   ) {
-            //     this.sendTransactionToPage()
-            //   }
-
-            const stepIndex = this.path.findIndex(({ id }) => id === step.id)
-
-            stepIndex === -1
-                ? this.path.push(step)
-                : !this.path[stepIndex].transactions
-                    ? this.path[stepIndex].transactions = step.transactions
-                    : this.path[stepIndex].transactions.push(...step.transactions)
-
-            this.currentStep++
-
-            const totalTransactions = this.path.reduce(
-                (total, path) => total + path.transactions.length,
-                0
-            )
-
-            if (this.currentStep >= totalTransactions) this.sendTransactionToPage()
+        formatPathToIncoming(path: IPathStep[]): IIncomingPathStep[] {
+            return Array.from(new Set(path.map((step) => {
+                return JSON.stringify({
+                    address: step.address,
+                    activity: step.activity,
+                    service: step.service,
+                    transactions: path.filter(p => p.id.split('-')[0] === step.id.split('-')[0]).map(p => p.transaction)
+                })
+            }))).map(s => JSON.parse(s))
         },
 
-        async sendTransactionToPage() {
+        async signAll() {
+            this.path = await Promise.all(this.path.map(async (step) => {
+                if(typeof step.transaction.signedHash !== 'undefined') return step
+                const signedHash = await this.signTransaction(step.transaction)
+                step.transaction.signedHash = signedHash
+                return step
+            }))
+
+            await this.sendTransactionsToPage()
+        },
+
+        async rejectAll() {
+            this.path.forEach(step => {
+                step.transaction.signedHash = null
+            })
+            await this.sendTransactionsToPage()
+        },
+
+        async sendTransactionsToPage() {
             await chrome.runtime.sendMessage({
                 id: this.requestId,
                 method: 'eth_signTransactions',
-                data: this.path,
+                data: this.formatPathToIncoming(this.path),
                 direction: 'out'
             })
         }

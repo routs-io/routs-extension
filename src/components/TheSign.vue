@@ -8,18 +8,18 @@ import IconArrowShort from '@/components/icons/IconArrowShort.vue'
 
 import { useSignStore } from '@/stores/sign'
 
-const { signTransaction, addSignedStepToPath } = useSignStore()
+const { signTransaction, signAll, rejectAll, sendTransactionsToPage } = useSignStore()
 const { path } = toRefs(useSignStore())
 
 const currentIndex = ref<number>(0)
 
 // Sign/reject all
-function signAll() {
-  console.log('signAll')
+async function signAllTransactions() {
+  await signAll()
 }
 
-function rejectAll() {
-  console.log('rejectAll')
+async function rejectAllTransactions() {
+  await rejectAll()
 }
 
 // Prev/next transaction
@@ -41,29 +41,32 @@ function nextTxn() {
 
 // Sign one transaction
 const isTxnSigned = computed<boolean>(() => {
-  return !!path.value[currentIndex.value].transactions[0].signedHash
+  return !!path.value[currentIndex.value].transaction.signedHash
+})
+
+const isAllSigned = computed<boolean>(() => {
+  return path.value.every((step) => typeof step.transaction.signedHash !== 'undefined')
 })
 
 async function signTxn() {
-  const signedHash = await signTransaction(path.value[currentIndex.value].transactions[0])
+  const signedHash = await signTransaction(path.value[currentIndex.value].transaction)
   console.log('signedHash', signedHash)
 
-  addSignedStepToPath({
-    id: path.value[currentIndex.value].id,
-    address: path.value[currentIndex.value].address,
-    service: path.value[currentIndex.value].service,
-    activity: path.value[currentIndex.value].activity,
-    transactions: [
-      {
-        ...path.value[currentIndex.value].transactions[0],
-        signedHash
-      }
-    ]
-  })
+  path.value[currentIndex.value].transaction.signedHash = signedHash
+
+  if (isAllSigned.value) await sendTransactionsToPage()
 }
 
-function regectTxn() {
-  console.log('regectTxn')
+async function rejectTxn() {
+  path.value.forEach((step) => {
+    console.log(step);
+    console.log(path.value[currentIndex.value]);
+    if (step.address.toLowerCase() === path.value[currentIndex.value].address.toLowerCase()) {
+      step.transaction.signedHash = null
+    }
+  })
+
+  if (isAllSigned.value) await sendTransactionsToPage()
 }
 </script>
 
@@ -73,11 +76,11 @@ function regectTxn() {
       <h1>Sign</h1>
 
       <div class="section__buttons">
-        <button class="button button--xs blue" @click="signAll">
+        <button class="button button--xs blue" @click="signAllTransactions">
           <IconCheck />
           Sign all
         </button>
-        <button class="button button--xs red" @click="rejectAll">
+        <button class="button button--xs red" @click="rejectAllTransactions">
           <IconX />
           Reject all
         </button>
@@ -85,7 +88,7 @@ function regectTxn() {
     </div>
 
     <div class="sign">
-      <p class="sign__amount">3 of 209 transactions</p>
+      <p class="sign__amount">{{ currentIndex }} of {{ path.length }} transactions</p>
 
       <div class="sign__transactions">
         <button class="sign__arrow sign__arrow--prev" :disabled="isPrevDisabled" @click="prevTxn">
@@ -102,10 +105,12 @@ function regectTxn() {
       <div class="sign__buttons">
         <template v-if="!isTxnSigned">
           <button class="button button--md button--blue" @click="signTxn">Sign</button>
-          <button class="button button--md button--red" @click="regectTxn">Reject</button>
+          <button class="button button--md button--red" @click="rejectTxn">Reject</button>
         </template>
 
-        <button v-else class="button button--md" disabled>Signed</button>
+        <button v-else class="button button--md" disabled>
+          {{ path[currentIndex].transaction.signedHash === null ? 'Rejected' : 'Signed' }}
+        </button>
       </div>
     </div>
   </section>

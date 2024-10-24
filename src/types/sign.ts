@@ -3,11 +3,18 @@ import { type TransactionRequest } from 'ethers'
 export interface ITransaction extends TransactionRequest {
     kind: string
     platform: string
-    signedHash?: string
+    signedHash?: string | null
 }
 
 export interface IPathStep {
-    id: number;
+    id: string;
+    address: string
+    activity: string
+    service: string
+    transaction: ITransaction
+}
+
+export interface IIncomingPathStep {
     address: string
     activity: string
     service: string
