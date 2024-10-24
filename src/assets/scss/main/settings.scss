@@ -1,0 +1,64 @@
+.settings {
+  padding: 0.625rem 1rem;
+  border-radius: 1rem;
+
+  background-color: var(--surface-primary);
+  box-shadow: var(--shadow-2);
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+
+    color: var(--label-primary);
+
+    &:not(:last-of-type) {
+      padding-bottom: 0.75rem;
+      margin-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-secondary);
+    }
+
+    &--password {
+      padding-right: 0.375rem;
+      cursor: pointer;
+
+      svg {
+        transition: var(--ease);
+      }
+
+      &:hover {
+        color: var(--blue);
+
+        svg {
+          transform: translateX(0.25rem);
+        }
+      }
+    }
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.125rem;
+
+    height: 3rem;
+
+    font-size: 1rem;
+    line-height: 140%;
+
+    span {
+      font-size: 0.875rem;
+      color: var(--icon-success-primary);
+    }
+  }
+
+  &__icon {
+    margin-left: auto;
+  }
+
+  &__btn {
+    width: 5.625rem;
+    margin-left: auto;
+  }
+}

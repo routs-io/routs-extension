@@ -1,5 +1,4 @@
 <script setup lang="ts">
-// Imports
 import { ref, computed } from 'vue'
 import IconX from '@/components/icons/IconX.vue'
 import { useWalletsStore } from '@/stores/wallets'
