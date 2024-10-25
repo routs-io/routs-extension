@@ -1,11 +1,6 @@
 <script setup lang="ts">
-interface IPasswordValidation {
-  id: string
-  text: string
-  status: boolean
-}
-
 import { ref, computed } from 'vue'
+import type { IPasswordValidation } from '@/types/auth'
 
 import AppInput from '@/components/app/AppInput.vue'
 import IconArrowShort from '@/components/icons/IconArrowShort.vue'
@@ -108,7 +103,7 @@ function resetPasswords() {
         @on-input="checkValidation"
       />
 
-      <ul class="password__requirements">
+      <ul class="validation">
         <li v-for="item in validation" :key="item.text" :class="{ valid: item.status }">
           {{ item.text }}
         </li>
@@ -126,5 +121,6 @@ function resetPasswords() {
 </template>
 
 <style lang="scss" scoped>
+@import '@/assets/scss/main/validation.scss';
 @import '@/assets/scss/main/password.scss';
 </style>

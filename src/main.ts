@@ -14,27 +14,27 @@ app.use(router)
 import { useSignStore } from './stores/sign'
 import { useAuthStore } from './stores/auth'
 const { setTransactions } = useSignStore()
-const { isExternalRequest } = toRefs(useAuthStore());
+const { isExternalRequest } = toRefs(useAuthStore())
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    console.log('popup', request)
-    isExternalRequest.value = true;
-    switch (request.method) {
-        case 'navigate':
-            router.push({ name: request.params[0] })
-            sendResponse({ status: 'success' })
-            break
-        case 'eth_requestAccounts':
-            router.push({ name: 'connect', query: { id: request.id } })
-            sendResponse({ status: 'success' })
-            break
-        case 'eth_signTransactions':
-            setTransactions(request.id, request.params)
-            router.push({ name: 'sign' })
-            break
-        default:
-            sendResponse({ status: 'fail' })
-    }
+  console.log('popup', request)
+  isExternalRequest.value = true
+  switch (request.method) {
+    case 'navigate':
+      router.push({ name: request.params[0] })
+      sendResponse({ status: 'success' })
+      break
+    case 'eth_requestAccounts':
+      router.push({ name: 'connect', query: { id: request.id } })
+      sendResponse({ status: 'success' })
+      break
+    case 'eth_signTransactions':
+      setTransactions(request.id, request.params)
+      router.push({ name: 'sign' })
+      break
+    default:
+      sendResponse({ status: 'fail' })
+  }
 })
 
 app.mount('#app')

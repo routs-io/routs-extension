@@ -24,6 +24,12 @@
     text-align: center;
   }
 
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
   &__btn {
     margin-top: auto;
   }
