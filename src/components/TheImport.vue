@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import router from '@/router'
+
+import type { IStoredWallet } from '@/types/wallets'
+
 import IconX from '@/components/icons/IconX.vue'
 import { useWalletsStore } from '@/stores/wallets'
-import type { IStoredWallet } from '@/types/wallets';
-import router from '@/router';
 
 const { shortenAddress, parseWallets, saveWallets } = useWalletsStore()
 
@@ -32,21 +34,50 @@ async function parsePrivateKeys() {
     .filter((wallet) => wallet.length > 0)
     .filter((wallet) => /^(0x)?[0-9a-fA-F]{64}$/.test(wallet))
 
-  failedIndexes.value = formattedWallets.value.map((wallet, i) => !/^(0x)?[0-9a-fA-F]{64}$/.test(wallet) ? i : null).filter(w => w !== null)
+  failedIndexes.value = formattedWallets.value
+    .map((wallet, i) => (!/^(0x)?[0-9a-fA-F]{64}$/.test(wallet) ? i : null))
+    .filter((w) => w !== null)
 
   wallets.value = await parseWallets(formattedWallets.value)
   if (wallets.value.length) isListShown.value = true
 }
 
 async function importWallets() {
-  await saveWallets(wallets.value);
-  isListShown.value = false;
+  await saveWallets(wallets.value)
+  isListShown.value = false
   router.push({ name: 'home' })
 }
 
 function handleButton() {
   isListShown.value ? importWallets() : parsePrivateKeys()
 }
+
+// Logos
+const name = ref('eth') // This could be dynamically set
+const icon = ref('')
+
+async function loadIcon() {
+  icon.value = (await import(`@/assets/img/logo/${name.value}.svg`)).default
+}
+
+loadIcon()
+
+// ----- Коли з'являться iншi iконки, можна юзати цей код (теоретично :))
+// ----- в <img /> треба змiнити :src="icon" на :src="icons[i]" i :alt="`${wallet.name} icon`"
+// const icons = ref<{ [key: number]: string }>({});
+
+// async function loadIcon(walletName: string, index: number) {
+//   try {
+//     const icon = (await import(`@/assets/img/logo/${walletName}.svg`)).default;
+//     icons.value[index] = icon; // Store icon URL by wallet index
+//   } catch (error) {
+//     console.error(`Failed to load icon for ${walletName}:`, error);
+//   }
+// }
+
+// onMounted(() => {
+//   wallets.value.forEach((wallet, i) => loadIcon(wallet.name, i));
+// });
 </script>
 
 <template>
@@ -69,14 +100,14 @@ function handleButton() {
       </p>
 
       <div class="import__list">
-        <div v-for="(wallet, i) in wallets" :key="i" class="import__wallet" :class="{ failed: failedIndexes.includes(i) }">
+        <div
+          v-for="(wallet, i) in wallets"
+          :key="i"
+          class="import__wallet"
+          :class="{ failed: failedIndexes.includes(i) }"
+        >
           <IconX class="import__logo" v-if="failedIndexes.includes(i)" />
-          <img
-            v-else
-            class="import__logo"
-            :src="`/src/assets/img/logo/${'eth'}.svg`"
-            :alt="`${'eth'} icon`"
-          />
+          <img v-else class="import__logo" :src="icon" :alt="`${name} icon`" />
 
           {{ shortenAddress(wallet.address) }}
         </div>
