@@ -4,12 +4,12 @@ import { defineStore } from 'pinia'
 export const useStorageStore = defineStore('storage', {
   actions: {
     async get(key: string) {
-      const storage = await chrome.storage.sync.get(key)
+      const storage = await chrome.storage.local.get(key)
       return storage[key]
     },
 
     async set(key: string, value: unknown) {
-      await chrome.storage.sync.set({ [key]: value })
+      await chrome.storage.local.set({ [key]: value })
     },
 
     async listen(callback: (arg: any) => void) {

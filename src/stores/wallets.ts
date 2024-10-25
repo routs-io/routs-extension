@@ -28,22 +28,20 @@ export const useWalletsStore = defineStore('wallets', {
     async saveWallets(wallets: IStoredWallet[]) {
       const { get, set } = useStorageStore()
 
-      const walletsInStorage: IStoredWallet[] = (await get('wallets')) ?? []
+      const walletsInStorage: IStoredWallet[] = Array.from((await get('wallets')) ?? [])
       
+      const uniquePrivateKeys = Array.from(new Set([...walletsInStorage.map(w => w.privateKey), ...wallets.map(w => w.privateKey)]))
+      const uniqueWallets = uniquePrivateKeys.map(pk => ({
+        privateKey: pk,
+        address: new Wallet(pk).address,
+        tags: walletsInStorage.find(w => w.privateKey === pk)?.tags ?? []
+      }))
+
       await set(
         'wallets',
-        Array.from(
-          new Set([
-            ...walletsInStorage.map((w) => JSON.stringify(w)),
-            ...wallets.map((w) => JSON.stringify(w))
-          ])
-        ).map((w) => JSON.parse(w))
+        uniqueWallets
       )
-      this.wallets = [...this.wallets, ...wallets.map((w) => ({
-        address: w.address,
-        tags: w.tags ?? [],
-        status: 'offline' as 'offline' | 'online'
-      }))]
+      await this.refreshWallets(0)
     },
 
     async handleConnection(wallet: IWallet, status?: boolean) {

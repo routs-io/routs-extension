@@ -28,14 +28,16 @@ const failedCount = computed<number>(() => {
 })
 
 async function parsePrivateKeys() {
-  formattedWallets.value = walletsInput.value
+  formattedWallets.value = Array.from(new Set(walletsInput.value
     .split('\n')
     .map((wallet) => wallet.trim())
     .filter((wallet) => wallet.length > 0)
-    .filter((wallet) => /^(0x)?[0-9a-fA-F]{64}$/.test(wallet))
+    .filter((wallet) => /^(0x)?[0-9a-fA-F]{64}$/.test(wallet))))
 
-  failedIndexes.value = formattedWallets.value
-    .map((wallet, i) => (!/^(0x)?[0-9a-fA-F]{64}$/.test(wallet) ? i : null))
+  failedIndexes.value = walletsInput.value
+    .split('\n')
+    .map((wallet) => wallet.trim())
+    .map((wallet, i) => formattedWallets.value.includes(wallet) ? null : i)
     .filter((w) => w !== null)
 
   wallets.value = await parseWallets(formattedWallets.value)

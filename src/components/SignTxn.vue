@@ -42,16 +42,16 @@ const transactionType = computed(() => {
     <div class="txn__box">
       <p class="txn__address">{{ shortenAddress(txn.transaction.from!.toString()) }}</p>
 
-      <div class="txn__tags">
+      <!-- div class="txn__tags" -->
         <!-- TODO: change tags -->
-        <div v-for="(tag, i) in 3" :key="i" class="tag" :class="`tag--${tag}`">Scroll</div>
-      </div>
+        <!-- <div v-for="(tag, i) in 3" :key="i" class="tag" :class="`tag--${tag}`">Scroll</div> -->
+      <!-- </div> --> 
     </div>
 
     <IconPen />
 
     <div class="txn__box">
-      <p v-if="transactionType === 'Approve'" class="txn__operation">
+      <!--p v-if="transactionType === 'Approve'" class="txn__operation">
         Allow to spend
         {{ formattedAllowance }}
       </p>
@@ -60,7 +60,7 @@ const transactionType = computed(() => {
         {{ formattedAmount }} ETH
         <IconArrowLong />
         250 USDB
-      </p>
+      </p-->
 
       <p class="txn__services">{{ txn.service }}</p>
     </div>
