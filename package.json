@@ -2,7 +2,7 @@
   "name": "routs-extension",
   "displayName": "Routs Extension",
   "description": "Routs Helper Extension",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {

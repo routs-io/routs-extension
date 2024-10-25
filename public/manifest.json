@@ -1,8 +1,8 @@
 {
   "name": "Routs Extension",
   "description": "Routs Extension",
-  "version": "0.0.1",
-  "version_name": "0.0.1",
+  "version": "1.0.0",
+  "version_name": "1.0.0",
   "manifest_version": 3,
   "action": {
     "default_popup": "index.html"
@@ -16,8 +16,7 @@
       "all_frames": true,
       "js": ["./scripts/content-script/index.js"],
       "matches": [
-        "http://127.0.0.1:5500/*",
-        "http://localhost:3620/*"
+        "https://app.routs.io/*"
       ],
       "run_at": "document_end"
     }
@@ -34,15 +33,13 @@
         "scripts/content-script/injectedScript.js"
       ],
       "matches": [
-        "http://127.0.0.1:5500/*",
-        "http://localhost:3620/*"
+        "https://app.routs.io/*"
       ]
     }
   ],
   "externally_connectable": {
     "matches": [
-      "http://127.0.0.1:5500/*",
-      "http://localhost:3620/*"
+      "https://app.routs.io/*"
     ]
   },
   "icons": {
