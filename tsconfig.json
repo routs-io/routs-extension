@@ -28,8 +28,8 @@
   },
   "include": [
     "env.d.ts",
-    "src/**/*",
-    "src/**/*.vue",
+    //"src/**/*",
+    //"src/**/*.vue",
     "scripts/background/*",
     "scripts/content-script/*",
     "scripts/utils/*",

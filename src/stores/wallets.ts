@@ -17,27 +17,33 @@ export const useWalletsStore = defineStore('wallets', {
       return `${address.substring(0, 8)}...${address.substring(address.length - 6)}`
     },
 
-    async saveWallets(privateKeys: string[]) {
+    async parseWallets(privateKeys: string[]): Promise<IStoredWallet[]> {
+      return privateKeys.map((pk) => ({
+        privateKey: pk,
+        address: new Wallet(pk).address,
+        tags: []
+      }));
+    },
+
+    async saveWallets(wallets: IStoredWallet[]) {
       const { get, set } = useStorageStore()
 
       const walletsInStorage: IStoredWallet[] = (await get('wallets')) ?? []
-
+      
       await set(
         'wallets',
         Array.from(
           new Set([
             ...walletsInStorage.map((w) => JSON.stringify(w)),
-            ...privateKeys.map((pk) =>
-              JSON.stringify({ address: new Wallet(pk).address, privateKey: pk, tags: [] })
-            )
+            ...wallets.map((w) => JSON.stringify(w))
           ])
         ).map((w) => JSON.parse(w))
       )
-      this.wallets = privateKeys.map((pk) => ({
-        address: new Wallet(pk).address,
-        tags: [],
-        status: 'offline'
-      }))
+      this.wallets = [...this.wallets, ...wallets.map((w) => ({
+        address: w.address,
+        tags: w.tags ?? [],
+        status: 'offline' as 'offline' | 'online'
+      }))]
     },
 
     async handleConnection(wallet: IWallet, status?: boolean) {
@@ -107,7 +113,7 @@ export const useWalletsStore = defineStore('wallets', {
 
       if (useChecked) {
         this.wallets = await Promise.all(this.wallets.map(async (wallet) => {
-          if(wallet.status === 'online') return wallet;
+          if (wallet.status === 'online') return wallet;
           await this.handleConnection(wallet, wallet.checked)
           return wallet;
         }))

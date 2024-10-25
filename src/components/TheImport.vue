@@ -2,11 +2,16 @@
 import { ref, computed } from 'vue'
 import IconX from '@/components/icons/IconX.vue'
 import { useWalletsStore } from '@/stores/wallets'
+import type { IStoredWallet } from '@/types/wallets';
+import router from '@/router';
 
-const { shortenAddress, saveWallets } = useWalletsStore()
+const { shortenAddress, parseWallets, saveWallets } = useWalletsStore()
 
 const walletsInput = ref<string>('')
-const isListShown = ref<boolean>(true)
+const formattedWallets = ref<string[]>([])
+const wallets = ref<IStoredWallet[]>([])
+const isListShown = ref<boolean>(false)
+const failedIndexes = ref<number[]>([])
 
 const placeholder = computed<string>(() => {
   return 'e.g.\nOxEeA6...9506Fc\nOxEeA6...9506Fc\nOxEeA6...9506Fc\nOxEeA6...9506Fc\nOxEeA6...9506Fc'
@@ -16,27 +21,31 @@ const buttonName = computed<string>(() => {
   return isListShown.value ? 'Continue' : 'Import'
 })
 
-async function parseWallets() {
-  const wallets = walletsInput.value
+const failedCount = computed<number>(() => {
+  return walletsInput.value.split('\n').length - wallets.value.length
+})
+
+async function parsePrivateKeys() {
+  formattedWallets.value = walletsInput.value
     .split('\n')
     .map((wallet) => wallet.trim())
     .filter((wallet) => wallet.length > 0)
     .filter((wallet) => /^(0x)?[0-9a-fA-F]{64}$/.test(wallet))
-  walletsInput.value = wallets.join('\n')
 
-  await saveWallets(wallets)
+  failedIndexes.value = formattedWallets.value.map((wallet, i) => !/^(0x)?[0-9a-fA-F]{64}$/.test(wallet) ? i : null).filter(w => w !== null)
 
-  // На респонзi змiни isListShown на true - це покаже наступний екран
-  // const response = await saveWallets(wallets)
-  // if (response) isListShown.value = true
+  wallets.value = await parseWallets(formattedWallets.value)
+  if (wallets.value.length) isListShown.value = true
 }
 
-function importWallets() {
-  console.log('importWallets')
+async function importWallets() {
+  await saveWallets(wallets.value);
+  isListShown.value = false;
+  router.push({ name: 'home' })
 }
 
 function handleButton() {
-  isListShown.value ? importWallets() : parseWallets()
+  isListShown.value ? importWallets() : parsePrivateKeys()
 }
 </script>
 
@@ -55,13 +64,13 @@ function handleButton() {
     <!-- Import -->
     <div v-else class="import">
       <p>
-        Recognized {{ '12' }} private keys,
-        <span v-if="true" style="color: var(--label-error)">{{ '3' }} failed </span>
+        Recognized {{ wallets.length }} private keys,
+        <span v-if="failedCount" style="color: var(--label-error)">{{ failedCount }} failed </span>
       </p>
 
       <div class="import__list">
-        <div v-for="(wallet, i) in 12" :key="i" class="import__wallet" :class="{ failed: i === 3 }">
-          <IconX class="import__logo" v-if="i === 3" />
+        <div v-for="(wallet, i) in wallets" :key="i" class="import__wallet" :class="{ failed: failedIndexes.includes(i) }">
+          <IconX class="import__logo" v-if="failedIndexes.includes(i)" />
           <img
             v-else
             class="import__logo"
@@ -69,7 +78,7 @@ function handleButton() {
             :alt="`${'eth'} icon`"
           />
 
-          {{ shortenAddress('0x2da10a1e27bf85cedd8ffb1abbe97e53391c0295') }}
+          {{ shortenAddress(wallet.address) }}
         </div>
       </div>
     </div>
