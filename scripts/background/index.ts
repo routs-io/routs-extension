@@ -1,7 +1,7 @@
 import { ContentMethods } from "../utils/content.js";
 
-const POPUP_WIDTH = 400;
-const POPUP_HEIGHT = 600;
+const POPUP_WIDTH = 378;
+const POPUP_HEIGHT = 639;
 
 declare type MessageRequest = {
     id: number,
