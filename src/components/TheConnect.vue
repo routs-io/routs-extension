@@ -11,7 +11,7 @@ const { sendWalletsToPage, refreshWallets } = useWalletsStore()
 
 // Computed
 const disconnectedWallets = computed<IWallet[]>(() => {
-  return wallets.value.filter(({ status }) => status === 'offline')
+  return wallets.value.filter(({ status, type }) => status === 'offline' && type === 'evm')
 })
 
 const isSomeChecked = computed<boolean>(() => {
@@ -32,7 +32,7 @@ async function connect() {
     await sendWalletsToPage(true)
   } else {
     // All
-    wallets.value.forEach((wallet) => (wallet.checked = true))
+    wallets.value.filter(({ type }) => type === 'evm').forEach((wallet) => (wallet.checked = true))
     await sendWalletsToPage(true)
   }
 }

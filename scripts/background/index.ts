@@ -11,6 +11,7 @@ declare type MessageRequest = {
 
 declare type SendMessageResponse = {
     status: "success" | "fail",
+    message?: string
 }
 
 const requests = new Map<number, {
@@ -23,11 +24,12 @@ let popup: chrome.windows.Window;
 const SUPPORTED_POPUP_METHODS = [
     "navigate",
     "eth_requestAccounts",
-    "eth_signTransactions"
+    "eth_signTransactions",
+    "fuel_generateAccounts"
 ]
 
 const SUPPORTED_CONTENT_METHODS = [
-    "eth_accounts"
+    "eth_accounts" 
 ]
 
 function generateId() {
@@ -65,7 +67,7 @@ async function openPopup(): Promise<SendMessageResponse> {
         return { status: 'success' };
     }
     else {
-        return { status: 'fail' }
+        return { status: 'fail', message: 'Popup not opened' };
     }
 }
 
@@ -149,7 +151,7 @@ chrome.runtime.onMessageExternal.addListener(async function (request, sender, se
     }
     catch (error) {
         console.log(error);
-        sendResponse({ status: 'fail' });
+        sendResponse({ status: 'fail', message: (error as Error).message });
     }
 })
 

@@ -13,6 +13,8 @@ const props = defineProps<{
   hasCheckbox?: boolean
 }>()
 
+console.log(props.wallet.type, props.wallet);
+
 const buttonName = computed<string>(() => {
   return props.wallet.status === 'online' ? 'Disconnect' : 'Connect'
 })
@@ -40,6 +42,7 @@ async function handleWalletConnection() {
     </div>
 
     <button
+      v-if="wallet.type === 'evm'"
       class="button wallet__btn"
       :class="{ 'button--red': wallet.status === 'online' }"
       @click="handleWalletConnection"

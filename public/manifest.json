@@ -16,6 +16,7 @@
       "all_frames": true,
       "js": ["./scripts/content-script/index.js"],
       "matches": [
+        "http://localhost:3620/*",
         "https://app.routs.io/*"
       ],
       "run_at": "document_end"
@@ -33,12 +34,14 @@
         "scripts/content-script/injectedScript.js"
       ],
       "matches": [
+        "http://localhost:3620/*",
         "https://app.routs.io/*"
       ]
     }
   ],
   "externally_connectable": {
     "matches": [
+      "http://localhost:3620/*",
       "https://app.routs.io/*"
     ]
   },
