@@ -2,6 +2,8 @@
 import { computed } from 'vue'
 import type { IWallet } from '@/types/wallets'
 
+import IconEvm from '@/components/icons/IconEvm.vue'
+import IconFuel from '@/components/icons/IconFuel.vue'
 import AppCheckbox from '@/components/app/AppCheckbox.vue'
 
 import { useWalletsStore } from '@/stores/wallets'
@@ -13,7 +15,7 @@ const props = defineProps<{
   hasCheckbox?: boolean
 }>()
 
-console.log(props.wallet.type, props.wallet);
+console.log(props.wallet.type, props.wallet)
 
 const buttonName = computed<string>(() => {
   return props.wallet.status === 'online' ? 'Disconnect' : 'Connect'
@@ -31,6 +33,10 @@ async function handleWalletConnection() {
     <div class="wallet__head">
       <div class="wallet__address">
         <span v-if="!hasCheckbox" class="status" :class="`status--${wallet.status}`" />
+
+        <IconEvm v-if="wallet.type === 'evm'" />
+        <IconFuel v-else />
+
         <p>{{ shortenAddress(wallet.address) }}</p>
       </div>
 
