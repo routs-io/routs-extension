@@ -62,7 +62,7 @@ const transactionType = computed(() => {
         250 USDB
       </p-->
 
-      <p class="txn__services">{{ txn.service }}</p>
+      <p class="txn__services">{{ txn.service === 'fuelmigration' ? "Fuel Migration to Phase 2" : txn.service }}</p>
     </div>
   </div>
 </template>

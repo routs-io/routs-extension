@@ -1,6 +1,6 @@
 import { localStorage } from "./storage.js"
 //import { generateFuelWallet } from "./index.js";
-import type { IWallet } from "./types.js";
+import type { IStoredWallet, IWallet } from "./types.js";
 
 export const ContentMethods = {
     eth_accounts: async () => {
@@ -8,6 +8,19 @@ export const ContentMethods = {
         const connectedWallets: IWallet[] = await get('connectedWallets') ?? [];
 
         return connectedWallets.filter(w => w.type === 'evm').map(w => w.address);
+    },
+
+    fuel_accounts: async (evmFilterAddresses?: string[]) => {
+        const { get } = localStorage;
+        const fuel: IStoredWallet[] = await get('wallets') ?? [];
+
+        return fuel
+            .filter(w => w.type === 'fuel' && (!evmFilterAddresses || evmFilterAddresses
+                .map(a => `${a.slice(0, 6)}...${a.slice(-4)}`.toLowerCase())
+                .includes(w.tags[0].name.toLowerCase())))
+            .map(w => evmFilterAddresses ? { address: w.address, index: evmFilterAddresses
+                .map(a => `${a.slice(0, 6)}...${a.slice(-4)}`.toLowerCase())
+                .indexOf(w.tags[0].name.toLowerCase()) } : w.address);
     },
 
     /*fuel_generateAccounts: async (addresses: string[]) => {

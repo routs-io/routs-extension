@@ -29,7 +29,8 @@ const SUPPORTED_POPUP_METHODS = [
 ]
 
 const SUPPORTED_CONTENT_METHODS = [
-    "eth_accounts" 
+    "eth_accounts",
+    "fuel_accounts"
 ]
 
 function generateId() {
@@ -86,7 +87,7 @@ async function handlePopupMethod(message: MessageRequest): Promise<SendMessageRe
 
 async function handleContentMethod(message: MessageRequest): Promise<any> {
     if (message.method in ContentMethods) {
-        return await ContentMethods[message.method as keyof typeof ContentMethods]();
+        return await ContentMethods[message.method as keyof typeof ContentMethods](message.params);
     } else {
         throw new Error(`Method ${message.method} not supported`);
     }
