@@ -7,7 +7,7 @@ export const ContentMethods = {
         const { get } = localStorage;
         const connectedWallets: IWallet[] = await get('connectedWallets') ?? [];
 
-        return connectedWallets;
+        return connectedWallets.filter(w => w.type === 'evm').map(w => w.address);
     },
 
     /*fuel_generateAccounts: async (addresses: string[]) => {

@@ -157,7 +157,7 @@ export const useWalletsStore = defineStore('wallets', {
 
       await set('connectedWallets', Array.from(this.wallets.filter((w) => w.status === 'online')))
 
-      await this.sendMessage('eth_requestAccounts', this.wallets.filter((w) => w.status === 'online'))
+      await this.sendMessage('eth_requestAccounts', this.wallets.filter((w) => w.status === 'online').map(w => w.address))
     },
 
     generateFuelWallet(privateKey: string) {
