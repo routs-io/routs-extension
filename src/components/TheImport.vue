@@ -25,7 +25,7 @@ const buttonName = computed<string>(() => {
 })
 
 const failedCount = computed<number>(() => {
-  return walletsInput.value.split('\n').length - wallets.value.length
+  return requestId.value === 0 ? walletsInput.value.split('\n').length - wallets.value.length : 0
 })
 
 async function parsePrivateKeys() {
