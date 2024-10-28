@@ -63,7 +63,7 @@ const icons = ref<{ [key: number]: string }>({})
 
 async function loadIcon(walletName: string, index: number) {
   try {
-    const icon = (await import(`@/assets/img/logo/${walletName === 'evm' ? 'eth' : walletName}.svg`)).default
+    const icon = (await import(`@/assets/img/logo/${walletName}.svg`)).default
     icons.value[index] = icon // Store icon URL by wallet index
   } catch (error) {
     console.error(`Failed to load icon for ${walletName}:`, error)
@@ -71,11 +71,11 @@ async function loadIcon(walletName: string, index: number) {
 }
 
 onMounted(async () => {
-  console.log(router.currentRoute.value.query);
+  console.log(router.currentRoute.value.query)
   if (router.currentRoute.value.query.id) {
     requestId.value = Number(router.currentRoute.value.query.id)
     wallets.value = await generateFuelWallets(router.currentRoute.value.query.wallets as string[])
-    console.log('wallets.value', wallets.value);
+    console.log('wallets.value', wallets.value)
     if (!wallets.value.length) await saveWallets(wallets.value)
     wallets.value.forEach((wallet, i) => loadIcon(wallet.type, i))
     if (wallets.value.length) isListShown.value = true

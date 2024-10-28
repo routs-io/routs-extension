@@ -34,8 +34,8 @@ async function handleWalletConnection() {
       <div class="wallet__address">
         <span v-if="!hasCheckbox" class="status" :class="`status--${wallet.status}`" />
 
-        <IconEvm v-if="wallet.type === 'evm'" />
-        <IconFuel v-else />
+        <IconEvm v-if="wallet.type === 'evm'" class="wallet__icon" />
+        <IconFuel v-else class="wallet__icon" />
 
         <p>{{ shortenAddress(wallet.address) }}</p>
       </div>

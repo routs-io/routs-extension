@@ -15,6 +15,12 @@
     gap: 0.375rem;
   }
 
+  &__icon {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+  }
+
   &__address {
     display: flex;
     align-items: center;
