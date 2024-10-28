@@ -63,7 +63,7 @@ const icons = ref<{ [key: number]: string }>({})
 
 async function loadIcon(walletName: string, index: number) {
   try {
-    const icon = (await import(`@/assets/img/logo/${walletName}.svg`)).default
+    const icon = (await import(`@/assets/img/logo/${walletName === 'evm' ? 'eth' : walletName}.svg`)).default
     icons.value[index] = icon // Store icon URL by wallet index
   } catch (error) {
     console.error(`Failed to load icon for ${walletName}:`, error)
