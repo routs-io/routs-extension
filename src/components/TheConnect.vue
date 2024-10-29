@@ -4,7 +4,7 @@ import type { IWallet } from '@/types/wallets'
 
 import WalletsItem from '@/components/WalletsItem.vue'
 import { useWalletsStore } from '@/stores/wallets'
-import router from '@/router';
+import router from '@/router'
 
 const { wallets } = toRefs(useWalletsStore())
 const { sendWalletsToPage, refreshWallets } = useWalletsStore()
@@ -23,23 +23,19 @@ const buttonName = computed<string>(() => {
 })
 
 // Connection
-async function cancel() {
-  await sendWalletsToPage(false)
-}
-
 async function connect() {
-  if (isSomeChecked.value) {
-    await sendWalletsToPage(true)
-  } else {
-    // All
-    wallets.value.filter(({ type }) => type === 'evm').forEach((wallet) => (wallet.checked = true))
-    await sendWalletsToPage(true)
+  if (!isSomeChecked.value) {
+    wallets.value.forEach((wallet) => {
+      if (wallet.type === 'evm') wallet.checked = true
+    })
   }
+
+  await sendWalletsToPage(true)
 }
 
 onMounted(async () => {
   wallets.value.forEach((wallet) => (wallet.checked = true))
-  await refreshWallets(Number(router.currentRoute.value.query.id))
+  await refreshWallets(+router.currentRoute.value.query.id)
 })
 </script>
 
@@ -59,14 +55,15 @@ onMounted(async () => {
           has-checkbox
         />
       </div>
-      <div class="wallets__list" v-else>
-        All wallets connected to the Routs
-      </div>
+
+      <p v-else>All wallets are connected to the Routs</p>
     </div>
 
-    <div class="section__bottom">
+    <div v-if="disconnectedWallets.length" class="section__bottom">
       <div class="section__connection">
-        <button class="button button--md button--outline" @click="cancel">Cancel</button>
+        <button class="button button--md button--outline" @click="sendWalletsToPage(false)">
+          Cancel
+        </button>
         <button class="button button--md button--blue" @click="connect">{{ buttonName }}</button>
       </div>
     </div>

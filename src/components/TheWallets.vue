@@ -24,11 +24,7 @@ const buttonName = computed<string>(() => {
 })
 
 async function handleConnections() {
-  if (isSomeWalletOffline.value) {
-    await connectAll()
-  } else {
-    await disconnectAll()
-  }
+  isSomeWalletOffline.value ? await connectAll() : await disconnectAll()
 }
 
 onMounted(async () => await refreshWallets(0))
