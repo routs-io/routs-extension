@@ -12,7 +12,6 @@ const { shortenAddress, handleConnection } = useWalletsStore()
 
 const props = defineProps<{
   wallet: IWallet
-  hasCheckbox?: boolean
 }>()
 
 console.log(props.wallet.type, props.wallet)
@@ -28,12 +27,10 @@ async function handleWalletConnection() {
 
 <template>
   <div class="wallet">
-    <AppCheckbox v-if="hasCheckbox" :id="`checkbox-${wallet.address}`" v-model="wallet.checked" />
+    <AppCheckbox :id="`checkbox-${wallet.address}`" v-model="wallet.checked" />
 
     <div class="wallet__head">
       <div class="wallet__address">
-        <span v-if="!hasCheckbox" class="status" :class="`status--${wallet.status}`" />
-
         <IconEvm v-if="wallet.type === 'evm'" class="wallet__icon" />
         <IconFuel v-else class="wallet__icon" />
 
@@ -59,7 +56,6 @@ async function handleWalletConnection() {
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/scss/app/status.scss';
 @import '@/assets/scss/app/tag.scss';
 @import '@/assets/scss/main/wallet.scss';
 </style>

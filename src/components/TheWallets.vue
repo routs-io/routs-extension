@@ -1,15 +1,20 @@
 <script setup lang="ts">
 // Imports
-import { onMounted, toRefs, computed } from 'vue'
+import { onMounted, toRefs, ref, computed } from 'vue'
+import type { IWallet } from '@/types/wallets'
 
+import WalletsExport from '@/components/WalletsExport.vue'
 import WalletsItem from '@/components/WalletsItem.vue'
 import IconAdd from '@/components/icons/IconAdd.vue'
+import IconShare from '@/components/icons/IconShare.vue'
+import IconDelete from '@/components/icons/IconDelete.vue'
 
 import { useWalletsStore } from '@/stores/wallets'
 
 const { wallets } = toRefs(useWalletsStore())
 const { refreshWallets, connectAll, disconnectAll } = useWalletsStore()
 
+// Computed
 const total = computed<string>(() => {
   const connected = wallets.value.filter((el) => el.status === 'online').length
   return `${wallets.value.length} total, ${connected} connected`
@@ -19,12 +24,38 @@ const isSomeWalletOffline = computed<boolean>(() => {
   return wallets.value.some((el) => el.status === 'offline')
 })
 
-const buttonName = computed<string>(() => {
+const buttonConnectName = computed<string>(() => {
   return isSomeWalletOffline.value ? 'Connect all' : 'Disconnect all'
 })
 
+const checkedWallets = computed<IWallet[]>(() => {
+  return wallets.value.filter(({ checked }) => checked)
+})
+
+const buttonExportName = computed<string>(() => {
+  const amount = checkedWallets.value.length
+  return `Export ${amount} file${amount > 1 ? 's' : ''}`
+})
+
+// Connect
 async function handleConnections() {
   isSomeWalletOffline.value ? await connectAll() : await disconnectAll()
+}
+
+// Modal
+const isModalOpen = ref<boolean>(false)
+
+function openModal() {
+  isModalOpen.value = !isModalOpen.value
+}
+
+function closeModal() {
+  isModalOpen.value = false
+}
+
+// Delete
+function onDelete() {
+  console.log('onDelete')
 }
 
 onMounted(async () => await refreshWallets(0))
@@ -50,7 +81,7 @@ onMounted(async () => await refreshWallets(0))
             :class="{ red: !isSomeWalletOffline }"
             @click="handleConnections"
           >
-            {{ buttonName }}
+            {{ buttonConnectName }}
           </button>
         </div>
 
@@ -68,6 +99,24 @@ onMounted(async () => await refreshWallets(0))
         <RouterLink class="button button--blue button--md" to="/import">Add</RouterLink>
       </div>
     </div>
+
+    <div v-if="checkedWallets.length" class="section__bottom">
+      <div class="section__connection section__connection--export">
+        <button class="button button--md button--blue" @click="openModal">
+          <IconShare />
+          {{ buttonExportName }}
+        </button>
+
+        <button class="button button--md button--outline" @click="onDelete">
+          <IconDelete color="var(--icon-error)" />
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal: export wallets -->
+    <Transition name="fade-down-medium">
+      <WalletsExport v-if="isModalOpen" @on-close="closeModal" />
+    </Transition>
   </section>
 </template>
 
@@ -75,4 +124,21 @@ onMounted(async () => await refreshWallets(0))
 @import '@/assets/scss/app/btn-icon.scss';
 @import '@/assets/scss/main/wallets.scss';
 @import '@/assets/scss/main/section.scss';
+
+.fade-down-medium {
+  &-enter-from {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+  }
+
+  &-leave-to {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+
+  &-enter-active,
+  &-leave-active {
+    transition: var(--ease);
+  }
+}
 </style>

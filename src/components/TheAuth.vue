@@ -2,7 +2,7 @@
 import { toRefs, ref, computed, onBeforeMount } from 'vue'
 import type { IPasswordValidation } from '@/types/auth'
 
-import AppInput from './app/AppInput.vue'
+import AppInput from '@/components/app/AppInput.vue'
 import { useAuthStore } from '@/stores/auth'
 
 // Stores

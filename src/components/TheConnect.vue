@@ -35,7 +35,7 @@ async function connect() {
 
 onMounted(async () => {
   wallets.value.forEach((wallet) => (wallet.checked = true))
-  await refreshWallets(+router.currentRoute.value.query.id)
+  await refreshWallets(Number(router.currentRoute.value.query.id))
 })
 </script>
 
@@ -47,13 +47,7 @@ onMounted(async () => {
 
     <div class="wallets">
       <div class="wallets__list" v-if="disconnectedWallets.length">
-        <WalletsItem
-          v-for="(wallet, i) in disconnectedWallets"
-          :key="i"
-          class="wallet"
-          :wallet
-          has-checkbox
-        />
+        <WalletsItem v-for="(wallet, i) in disconnectedWallets" :key="i" class="wallet" :wallet />
       </div>
 
       <p v-else>All wallets are connected to the Routs</p>

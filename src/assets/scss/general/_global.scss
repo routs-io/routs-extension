@@ -18,8 +18,7 @@ body {
   -moz-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
 
-  // TODO: delete when finished
-  background-color: #d1d1d1;
+  background-color: var(--surface-quaternary);
 }
 
 main {

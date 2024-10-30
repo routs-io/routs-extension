@@ -133,6 +133,22 @@
     }
   }
 
+  &--md {
+    & .input {
+      &__block {
+        height: 2.75rem;
+        padding: 0 0.875rem;
+        border-radius: 0.75rem;
+
+        background-color: var(--surface-primary);
+      }
+    }
+
+    input {
+      font-size: 1rem;
+    }
+  }
+
   &--lg {
     & .input {
       &__block {
