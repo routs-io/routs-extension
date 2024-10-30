@@ -12,7 +12,7 @@ import IconDelete from '@/components/icons/IconDelete.vue'
 import { useWalletsStore } from '@/stores/wallets'
 
 const { wallets } = toRefs(useWalletsStore())
-const { refreshWallets, connectAll, disconnectAll } = useWalletsStore()
+const { refreshWallets, connectAll, disconnectAll, exportToCSV } = useWalletsStore()
 
 // Computed
 const total = computed<string>(() => {
@@ -34,7 +34,7 @@ const checkedWallets = computed<IWallet[]>(() => {
 
 const buttonExportName = computed<string>(() => {
   const amount = checkedWallets.value.length
-  return `Export ${amount} file${amount > 1 ? 's' : ''}`
+  return `Export ${amount} wallet${amount > 1 ? 's' : ''}`
 })
 
 // Connect
@@ -49,8 +49,9 @@ function openModal() {
   isModalOpen.value = !isModalOpen.value
 }
 
-function closeModal() {
+async function closeModal() {
   isModalOpen.value = false
+  await exportToCSV(checkedWallets.value)
 }
 
 // Delete

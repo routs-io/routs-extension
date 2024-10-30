@@ -159,6 +159,26 @@ chrome.runtime.onMessageExternal.addListener(async function (request, sender, se
 chrome.runtime.onMessage.addListener(async function (request, sender, sendResponse) {
     console.log('background.js', request);
     console.log('internal', sender);
+    if (request.type === 'exportToCSV') {
+        console.log(chrome.downloads);
+        chrome.downloads
+            .download({
+                url: request.data.blobURL,
+                saveAs: true,
+                filename: 'routs-extension-export.csv',
+                conflictAction: 'uniquify'
+            })
+            .then(() => {
+                // Once the download is complete, revoke the URL
+                chrome.tabs.sendMessage(sender.tab?.id ?? 0, {
+                    type: "revokeBlob",
+                    blobURL: request.data.blobURL,
+                });
+            });
+    }
+    else if (request.type === 'revokeBlob') {
+        URL.revokeObjectURL(request.blobURL);
+    }
     if (request.direction == 'out' && requests.get(request.id)) {
         const req = requests.get(request.id);
         if (req) {

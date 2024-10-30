@@ -190,6 +190,20 @@ export const useWalletsStore = defineStore('wallets', {
         }
       });
       return newWallets;
+    },
+
+    async exportToCSV(wallets: IWallet[]) {
+      const { get } = useStorageStore();
+
+      const walletsInStorage: IStoredWallet[] = await get('wallets');
+
+      const csvLines = walletsInStorage
+        .filter(w => wallets.map(wallet => wallet.address.toLowerCase()).includes(w.address.toLowerCase()))
+        .map(w => `${w.address},${w.privateKey}\n`);
+      const valueBlob = new Blob(['Address,PrivateKey\n', ...csvLines], { type: 'text/csv;encoding:utf-8' });
+      const blobURL = URL.createObjectURL(valueBlob);
+
+      await chrome.runtime.sendMessage({ type: 'exportToCSV', data: { blobURL } });
     }
   }
 })
