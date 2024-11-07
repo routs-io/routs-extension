@@ -24,8 +24,6 @@
   ],
   "offline_enabled": true,
   "permissions": [
-    "activeTab",
-    "scripting",
     "storage",
     "downloads"
   ],
