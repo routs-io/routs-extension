@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { formatEther } from 'ethers'
 
 import type { IPathStep } from '@/types/sign'
 
@@ -26,14 +25,30 @@ const formattedAllowance = computed(() => {
   return num < T ? (num < B ? (num < M ? num.toString(10) : '>1M') : '>1B') : '>1T'
 })
 
-const formattedAmount = computed(() => {
-  if (!props.txn.transaction.value) return '0'
-  return formatEther(props.txn.transaction.value)
+const formattedAmountIn = computed(() => {
+  if (!props.txn.amount) return '0'
+  return `${props.txn.amount}${props.txn.isExactAmount ? '' : '%'} ${props.txn.token ?? props.txn.tokenIn}`
 })
 
-const transactionType = computed(() => {
-  if (props.txn.transaction.kind === 'approve') return 'Approve'
-  return props.txn.activity.slice(0, 1).toUpperCase() + props.txn.activity.slice(1)
+const transactionText = computed(() => {
+  if (props.txn.transaction.kind === 'approve') return `Allow to spend ${formattedAllowance.value}`
+  switch (props.txn.type) {
+    case 'swap':
+      return `Swap ${formattedAmountIn.value}` + IconArrowLong + `${props.txn.tokenOut}`
+    case 'bridge_token':
+      return `Bridge ${formattedAmountIn.value}` + IconArrowLong + `${props.txn.networkTo}`
+    case 'bridge_tokens':
+      return `Bridge ${formattedAmountIn.value}` + IconArrowLong + `${props.txn.tokenOut} on ${props.txn.networkTo}`
+    case 'mint':
+      return `Mint ${props.txn.repeat} NFT`
+    case 'dmail':
+      return `Send message via Dmail`
+    case 'lending':
+      return `${props.txn.direction!.slice(0, 1).toUpperCase() + props.txn.direction!.slice(1)} ${formattedAmountIn.value}` + IconArrowLong + `${props.txn.token}`
+    default:
+      if(props.txn.service === 'fuelmigration') return `Deposit ${formattedAmountIn.value}` 
+      return 'unknown'
+  }
 })
 </script>
 
@@ -43,26 +58,21 @@ const transactionType = computed(() => {
       <p class="txn__address">{{ shortenAddress(txn.transaction.from!.toString()) }}</p>
 
       <!-- div class="txn__tags" -->
-        <!-- TODO: change tags -->
-        <!-- <div v-for="(tag, i) in 3" :key="i" class="tag" :class="`tag--${tag}`">Scroll</div> -->
-      <!-- </div> --> 
+      <!-- TODO: change tags -->
+      <!-- <div v-for="(tag, i) in 3" :key="i" class="tag" :class="`tag--${tag}`">Scroll</div> -->
+      <!-- </div> -->
     </div>
 
     <IconPen />
 
     <div class="txn__box">
-      <!--p v-if="transactionType === 'Approve'" class="txn__operation">
-        Allow to spend
-        {{ formattedAllowance }}
+      <p class="txn__operation">
+        {{ transactionText }}
       </p>
-      <p v-else class="txn__operation">
-        {{ transactionType }}
-        {{ formattedAmount }} ETH
-        <IconArrowLong />
-        250 USDB
-      </p-->
 
-      <p class="txn__services">{{ txn.service === 'fuelmigration' ? "Fuel Migration to Phase 2" : txn.service }}</p>
+      <p class="txn__services">
+        {{ txn.service }} on {{ txn.network }}
+      </p>
     </div>
   </div>
 </template>

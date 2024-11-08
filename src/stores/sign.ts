@@ -1,5 +1,6 @@
 import type {
     IIncomingPathStep,
+    IOutgoingPathStep,
     IPathStep,
     ISignStore,
     ITransaction,
@@ -39,24 +40,47 @@ export const useSignStore = defineStore('sign', {
                     return {
                         id,
                         address: step.address,
-                        activity: step.activity,
+                        type: step.type,
                         service: step.service,
+                        network: step.network,
+                        networkFrom: step.networkFrom ?? step.network,
+                        networkTo: step.networkTo ?? step.network,
+                        tokenIn: step.tokenIn ?? step.token,
+                        tokenOut: step.tokenOut ?? step.token,
+                        amount: step.amount,
+                        isExactAmount: step.isExactAmount ?? null,
+                        slippage: step.slippage ?? null,
+                        dstNativeAmount: step.dstNativeAmount ?? null,
+                        repeat: step.repeat ?? 1,
+                        direction: step.direction ?? null,
                         transaction: transaction
-                    }
+                    } as IPathStep
                 })
             }).flat()
 
         },
 
-        formatPathToIncoming(path: IPathStep[]): IIncomingPathStep[] {
+        formatPathToIncoming(path: IPathStep[]): IOutgoingPathStep[] {
             return Array.from(new Set(path.map((step) => {
                 return JSON.stringify({
+                    index: step.id.split('-')[0],
                     address: step.address,
-                    activity: step.activity,
+                    type: step.type,
                     service: step.service,
+                    network: step.network,
                     transactions: path.filter(p => p.id.split('-')[0] === step.id.split('-')[0]).map(p => p.transaction)
                 })
-            }))).map(s => JSON.parse(s))
+            })))
+                .map(s => JSON.parse(s))
+                .sort((a, b) => a.index - b.index)
+                .map(step => ({
+                    index: step.index,
+                    address: step.address,
+                    type: step.type,
+                    service: step.service,
+                    network: step.network,
+                    transactions: step.transactions
+                }))
         },
 
         async signAll() {

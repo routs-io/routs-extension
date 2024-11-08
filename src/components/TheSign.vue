@@ -55,6 +55,7 @@ async function signTxn() {
   path.value[currentIndex.value].transaction.signedHash = signedHash
 
   if (isAllSigned.value) await sendTransactionsToPage()
+  else nextTxn()
 }
 
 async function rejectTxn() {
@@ -75,7 +76,7 @@ async function rejectTxn() {
     <div class="section__head">
       <h1>Sign</h1>
 
-      <div class="section__buttons">
+      <div class="section__buttons" v-if="path.length > 1">
         <button class="button button--xs blue" @click="signAllTransactions">
           <IconCheck />
           Sign all
