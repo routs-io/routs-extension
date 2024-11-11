@@ -30,24 +30,45 @@ const formattedAmountIn = computed(() => {
   return `${props.txn.amount}${props.txn.isExactAmount ? '' : '%'} ${props.txn.token ?? props.txn.tokenIn}`
 })
 
-const transactionText = computed(() => {
+const transactionTextLeft = computed(() => {
   if (props.txn.transaction.kind === 'approve') return `Allow to spend ${formattedAllowance.value}`
   switch (props.txn.type) {
     case 'swap':
-      return `Swap ${formattedAmountIn.value}` + IconArrowLong + `${props.txn.tokenOut}`
+      return `Swap ${formattedAmountIn.value}`
     case 'bridge_token':
-      return `Bridge ${formattedAmountIn.value}` + IconArrowLong + `${props.txn.networkTo}`
+      return `Bridge ${formattedAmountIn.value}`
     case 'bridge_tokens':
-      return `Bridge ${formattedAmountIn.value}` + IconArrowLong + `${props.txn.tokenOut} on ${props.txn.networkTo}`
+      return `Bridge ${formattedAmountIn.value}`
     case 'mint':
       return `Mint ${props.txn.repeat} NFT`
     case 'dmail':
       return `Send message via Dmail`
     case 'lending':
-      return `${props.txn.direction!.slice(0, 1).toUpperCase() + props.txn.direction!.slice(1)} ${formattedAmountIn.value}` + IconArrowLong + `${props.txn.token}`
+      return `${props.txn.direction!.slice(0, 1).toUpperCase() + props.txn.direction!.slice(1)} ${formattedAmountIn.value}`
     default:
       if(props.txn.service === 'fuelmigration') return `Deposit ${formattedAmountIn.value}` 
       return 'unknown'
+  }
+})
+
+const transactionTextRight = computed(() => {
+  if (props.txn.transaction.kind === 'approve') return null
+  switch (props.txn.type) {
+    case 'swap':
+      return `${props.txn.tokenOut}`
+    case 'bridge_token':
+      return `${props.txn.networkTo}`
+    case 'bridge_tokens':
+      return `${props.txn.tokenOut} on ${props.txn.networkTo}`
+    case 'mint':
+      return null
+    case 'dmail':
+      return null
+    case 'lending':
+      return `${props.txn.token}`
+    default:
+      if(props.txn.service === 'fuelmigration') return null
+      return null
   }
 })
 </script>
@@ -67,7 +88,7 @@ const transactionText = computed(() => {
 
     <div class="txn__box">
       <p class="txn__operation">
-        {{ transactionText }}
+        {{ transactionTextLeft }} <IconArrowLong v-if="transactionTextRight" /> {{ transactionTextRight ?? '' }}
       </p>
 
       <p class="txn__services">
