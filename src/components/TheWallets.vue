@@ -92,10 +92,10 @@ onMounted(async () => await refreshWallets(0))
       </template>
 
       <!-- Empty -->
-      <div v-else class="wallets__plug">
-        <img class="wallets__img" src="@/assets/img/wallet.svg" alt="wallet" />
-        <h2 class="wallets__title">No wallets</h2>
-        <p class="wallets__text">You haven’t add any wallets yet.</p>
+      <div v-else class="plug">
+        <img class="plug__img" src="@/assets/img/wallet.svg" alt="wallet" />
+        <h2 class="plug__title">No wallets</h2>
+        <p class="plug__text">You haven’t add any wallets yet.</p>
 
         <RouterLink class="button button--blue button--md" to="/import">Add</RouterLink>
       </div>
@@ -123,6 +123,7 @@ onMounted(async () => await refreshWallets(0))
 
 <style lang="scss" scoped>
 @import '@/assets/scss/app/btn-icon.scss';
+@import '@/assets/scss/main/plug.scss';
 @import '@/assets/scss/main/wallets.scss';
 @import '@/assets/scss/main/section.scss';
 

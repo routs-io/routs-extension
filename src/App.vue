@@ -12,13 +12,13 @@ const { isLocked, isExternalRequest } = toRefs(useAuthStore())
 const { checkIsLocked } = useAuthStore()
 
 onBeforeMount(async () => {
-  await checkIsLocked();
-  router.push({ name: 'home'})
+  await checkIsLocked()
+  router.push({ name: 'home' })
 })
 </script>
 
 <template>
-  <div v-if="!isLocked" class="container">
+  <div v-if="!false" class="container">
     <RouterView />
     <AppNavigation v-if="!isExternalRequest" />
   </div>

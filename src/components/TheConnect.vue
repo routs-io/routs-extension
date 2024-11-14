@@ -33,6 +33,11 @@ async function connect() {
   await sendWalletsToPage(true)
 }
 
+// Close
+function closeWindow() {
+  // Close window logic
+}
+
 onMounted(async () => {
   wallets.value.forEach((wallet) => (wallet.checked = true))
   await refreshWallets(Number(router.currentRoute.value.query.id))
@@ -50,7 +55,13 @@ onMounted(async () => {
         <WalletsItem v-for="(wallet, i) in disconnectedWallets" :key="i" class="wallet" :wallet />
       </div>
 
-      <p v-else>All wallets are connected to the Routs</p>
+      <div v-else class="plug">
+        <img class="plug__img" src="@/assets/img/checked-wallet.svg" alt="wallet" />
+        <h2 class="plug__title">All Wallets Are Connected</h2>
+        <p class="plug__text">You ‘ve connected all your wallets.</p>
+
+        <button class="button button--blue button--md" @click="closeWindow">Close</button>
+      </div>
     </div>
 
     <div v-if="disconnectedWallets.length" class="section__bottom">
@@ -65,6 +76,7 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
+@import '@/assets/scss/main/plug.scss';
 @import '@/assets/scss/main/wallets.scss';
 @import '@/assets/scss/main/section.scss';
 </style>
