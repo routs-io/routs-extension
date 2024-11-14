@@ -1,0 +1,19 @@
+.generator {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+
+  &__icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  &__name {
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+
+  &__counter {
+    margin-left: auto;
+  }
+}

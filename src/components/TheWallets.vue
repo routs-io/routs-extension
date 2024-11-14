@@ -6,6 +6,7 @@ import type { IWallet } from '@/types/wallets'
 import WalletsExport from '@/components/WalletsExport.vue'
 import WalletsItem from '@/components/WalletsItem.vue'
 import IconAdd from '@/components/icons/IconAdd.vue'
+import IconFlash from '@/components/icons/IconFlash.vue'
 import IconShare from '@/components/icons/IconShare.vue'
 import IconDelete from '@/components/icons/IconDelete.vue'
 
@@ -67,9 +68,14 @@ onMounted(async () => await refreshWallets(0))
     <div class="section__head">
       <h1>Wallets</h1>
 
-      <RouterLink v-if="wallets.length" class="btn-icon" to="/import">
-        <IconAdd />
-      </RouterLink>
+      <div class="section__buttons">
+        <RouterLink v-if="wallets.length" class="btn-icon" to="/generate">
+          <IconFlash />
+        </RouterLink>
+        <RouterLink v-if="wallets.length" class="btn-icon" to="/import">
+          <IconAdd />
+        </RouterLink>
+      </div>
     </div>
 
     <div class="wallets">

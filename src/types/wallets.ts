@@ -18,6 +18,12 @@ export interface IStoredWallet {
   type: WalletType
 }
 
+export interface IGeneratedWallet {
+  icon: string
+  name: string
+  amount: number
+}
+
 export interface ITag {
   id: number
   name: string

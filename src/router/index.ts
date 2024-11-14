@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import ImportView from '@/views/ImportView.vue'
 import ConnectView from '@/views/ConnectView.vue'
+import GenerateView from '@/views/GenerateView.vue'
 import HistoryView from '@/views/HistoryView.vue'
 import SignView from '@/views/SignView.vue'
 import SettingsView from '@/views/SettingsView.vue'
@@ -23,6 +24,11 @@ const router = createRouter({
       path: '/connect',
       name: 'connect',
       component: ConnectView
+    },
+    {
+      path: '/generate',
+      name: 'generate',
+      component: GenerateView
     },
     {
       path: '/history',
