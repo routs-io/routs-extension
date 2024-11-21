@@ -52,6 +52,10 @@ function openModal() {
 
 async function closeModal() {
   isModalOpen.value = false
+}
+
+async function exportWallets() {
+  isModalOpen.value = false
   await exportToCSV(checkedWallets.value)
 }
 
@@ -122,7 +126,7 @@ onMounted(async () => await refreshWallets(0))
 
     <!-- Modal: export wallets -->
     <Transition name="fade-down-medium">
-      <WalletsExport v-if="isModalOpen" @on-close="closeModal" />
+      <WalletsExport v-if="isModalOpen" @on-close="closeModal" @on-success="exportWallets" />
     </Transition>
   </section>
 </template>

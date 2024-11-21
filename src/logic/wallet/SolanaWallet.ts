@@ -2,7 +2,6 @@ import type { WalletType } from "@/types/wallets";
 import Wallet from "./Wallet";
 import { Keypair as SolanaSigner } from "@solana/web3.js";
 import * as bs58 from "bs58";
-import { Buffer } from 'buffer';
 
 export class SolanaWallet extends Wallet {
     protected generateAddress(privateKey: string): string {

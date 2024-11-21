@@ -9,7 +9,8 @@ import { useAuthStore } from '@/stores/auth'
 const { checkPassword } = useAuthStore()
 
 const emit = defineEmits<{
-  'on-close': [void]
+  'on-close': [void],
+  'on-success': [void]
 }>()
 
 // Password
@@ -20,7 +21,7 @@ async function sendPassword() {
   if (!password.value) return
   isWrongPassword.value = !(await checkPassword(password.value))
 
-  if (!isWrongPassword.value) emit('on-close')
+  if (!isWrongPassword.value) emit('on-success')
 }
 
 // Close modal
