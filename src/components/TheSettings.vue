@@ -7,7 +7,7 @@ import IconLocker from '@/components/icons/IconLocker.vue'
 import SettingsPassword from '@/components/SettingsPassword.vue'
 import { useAuthStore } from '@/stores/auth'
 
-const { isLocked } = toRefs(useAuthStore())
+const { isLocked, projectVersion } = toRefs(useAuthStore())
 const { updateIsLocked } = useAuthStore()
 const isPasswordShown = ref<boolean>(false)
 
@@ -51,11 +51,11 @@ async function updateLock() {
       <!-- Update -->
       <div class="settings__row">
         <p class="settings__text">
-          Routs version: {{ '1.23' }}
-          <span v-if="true">Update available</span>
+          Routs version: {{ projectVersion }}
+          <span v-if="false">Update available</span>
         </p>
 
-        <button v-if="true" class="button button--blue settings__btn" @click="updateExtension">
+        <button v-if="false" class="button button--blue settings__btn" @click="updateExtension">
           Update
         </button>
       </div>

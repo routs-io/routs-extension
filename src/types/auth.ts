@@ -2,6 +2,7 @@ export interface IAuthStore {
   isRegistered: boolean
   isLocked: boolean
   isExternalRequest: boolean
+  projectVersion: string
 }
 
 export interface IPasswordValidation {
