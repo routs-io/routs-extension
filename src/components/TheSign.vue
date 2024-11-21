@@ -8,7 +8,7 @@ import IconArrowShort from '@/components/icons/IconArrowShort.vue'
 
 import { useSignStore } from '@/stores/sign'
 
-const { signTransaction, signAll, rejectAll, sendTransactionsToPage } = useSignStore()
+const { signEvmTransaction, signAll, rejectAll, sendTransactionsToPage } = useSignStore()
 const { path } = toRefs(useSignStore())
 
 const currentIndex = ref<number>(0)
@@ -49,8 +49,7 @@ const isAllSigned = computed<boolean>(() => {
 })
 
 async function signTxn() {
-  const signedHash = await signTransaction(path.value[currentIndex.value].transaction)
-  console.log('signedHash', signedHash)
+  const signedHash = await signEvmTransaction(path.value[currentIndex.value].transaction)
 
   path.value[currentIndex.value].transaction.signedHash = signedHash
 
@@ -60,8 +59,6 @@ async function signTxn() {
 
 async function rejectTxn() {
   path.value.forEach((step) => {
-    console.log(step);
-    console.log(path.value[currentIndex.value]);
     if (step.address.toLowerCase() === path.value[currentIndex.value].address.toLowerCase()) {
       step.transaction.signedHash = null
     }
@@ -89,7 +86,7 @@ async function rejectTxn() {
     </div>
 
     <div class="sign">
-      <p class="sign__amount">{{ currentIndex }} of {{ path.length }} transactions</p>
+      <p class="sign__amount">{{ currentIndex + 1 }} of {{ path.length }} transactions</p>
 
       <div class="sign__transactions">
         <button class="sign__arrow sign__arrow--prev" :disabled="isPrevDisabled" @click="prevTxn">

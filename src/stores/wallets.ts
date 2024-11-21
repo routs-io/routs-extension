@@ -1,16 +1,18 @@
 import { defineStore } from 'pinia'
 import { Wallet as EthersWallet } from 'ethers'
-import { Signer as FuelWallet } from '@fuel-ts/signer'
 
 import type {
   IStoredWallet,
-  IWallet,
   IWalletsStore,
   TypeTagColor,
   WalletType
 } from '@/types/wallets'
 
 import { useStorageStore } from '@/stores/storage'
+import { FuelWallet } from '@/logic/wallet/FuelWallet'
+import type { IWallet } from '@/logic/wallet/types'
+import { EvmWallet } from '@/logic/wallet/EvmWallet'
+import { SolanaWallet } from '@/logic/wallet/SolanaWallet'
 
 export const useWalletsStore = defineStore('wallets', {
   state: (): IWalletsStore => ({
@@ -37,7 +39,7 @@ export const useWalletsStore = defineStore('wallets', {
       if (/^0x[a-fA-F0-9]{40}$/g.test(address)) return 'evm'
       else if (/^0x[a-fA-F0-9]{64}$/g.test(address)) return 'fuel'
       else if (/^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/g.test(address)) return 'btc'
-      else if (/X[1-9A-HJ-NP-Za-km-z]{33}$/g.test(address)) return 'dash'
+      else if (/^[1-9A-HJ-NP-Za-km-z]{32,44}$/g.test(address)) return 'sol'
       else return 'unknown'
     },
 
@@ -81,15 +83,11 @@ export const useWalletsStore = defineStore('wallets', {
           wallets.find((w) => w.address.toLowerCase() === address)?.address,
         tags: Array.from(
           walletsInStorage.find((w) => w.address.toLowerCase() === address)?.tags ??
-            wallets.find((w) => w.address.toLowerCase() === address)?.tags ??
-            []
+          wallets.find((w) => w.address.toLowerCase() === address)?.tags ??
+          []
         ),
         type: this.detectWalletType(address)
       }))
-
-      console.log('uniqueWallets', uniqueWallets)
-
-      console.log(this.wallets)
 
       await set('wallets', uniqueWallets)
       if (this.requestId) {
@@ -105,7 +103,7 @@ export const useWalletsStore = defineStore('wallets', {
     async handleConnection(wallet: IWallet, status?: boolean) {
       const { get, set } = useStorageStore()
 
-      this.wallets[this.wallets.indexOf(wallet)].status =
+      this.wallets[this.wallets.map(w => w.address).indexOf(wallet.address)].status =
         typeof status !== 'undefined'
           ? status
             ? 'online'
@@ -141,35 +139,40 @@ export const useWalletsStore = defineStore('wallets', {
       await set('connectedWallets', [])
     },
 
-    async getSignerByAddress(address: string): Promise<EthersWallet> {
-      const { get } = useStorageStore()
-      const wallets: IStoredWallet[] = await get('wallets')
-      const wallet = wallets.find((w) => w.address.toLowerCase() === address.toLowerCase())
-      if (!wallet) {
-        throw new Error('Wallet not found')
-      }
-      return new EthersWallet(wallet.privateKey)
+    getWalletByAddress(address: string) {
+      return this.wallets.find((w) => w.address === address)
     },
 
     async refreshWallets(id: number) {
-      console.log('refreshWallets', id)
       this.requestId = id
       const { get } = useStorageStore()
       const wallets: IStoredWallet[] = await get('wallets')
       const connectedWallets: IWallet[] = (await get('connectedWallets')) ?? []
 
-      console.log(wallets, connectedWallets)
+      this.wallets = wallets.map((w) => {
+        let wallet: IWallet;
+        w.type = this.detectWalletType(w.address)
+        if (w.type === 'evm') {
+          wallet = new EvmWallet(w.privateKey)
+        } else if (w.type === 'fuel') {
+          wallet = new FuelWallet(w.privateKey)
+        } else if(w.type === 'sol') {
+          wallet = new SolanaWallet(w.privateKey)
+        }
+        else {
+          
+          console.log('Unknown wallet type', w.type)
+          return null
+        }
 
-      this.wallets = wallets.map((w) => ({
-        address: w.address,
-        tags: w.tags ?? [],
-        type: w.type ?? 'evm',
-        status: connectedWallets
+        wallet.tags = w.tags ?? []
+        wallet.status = connectedWallets
           .map((w) => w.address.toLowerCase())
           .includes(w.address.toLowerCase())
           ? 'online'
           : 'offline'
-      }))
+        return wallet
+      }).filter(w => w !== null)
     },
 
     async sendWalletsToPage(useChecked: boolean = false) {
@@ -193,14 +196,7 @@ export const useWalletsStore = defineStore('wallets', {
       )
     },
 
-    generateFuelWallet(privateKey: string) {
-      const wallet = new FuelWallet(privateKey)
-      console.log('fuel wallet', wallet)
-      return wallet.address.toB256()
-    },
-
-    async generateFuelWallets(addresses: string[]) {
-      console.log('addresses', addresses)
+    async generateFuelWalletsFromEvm(addresses: string[]): Promise<IStoredWallet[]> {
       const { get } = useStorageStore()
       const walletsInStorage: IStoredWallet[] = (await get('wallets')) ?? []
 
@@ -212,37 +208,56 @@ export const useWalletsStore = defineStore('wallets', {
         return []
       }
 
-      console.log('wallets', wallets)
-
       const newWallets = wallets.map((w) => {
-        const wallet = this.generateFuelWallet(w.privateKey)
-        console.log('fuel address', wallet)
+        const wallet = new FuelWallet(w.privateKey)
+        wallet.address = wallet.address.slice(0, 2) !== '0x' ? `0x${wallet.address}` : wallet.address;
+        wallet.tags = [
+          {
+            id: 1,
+            name: `${w.address.slice(0, 6)}...${w.address.slice(-4)}`,
+            color: 'green' as TypeTagColor
+          }
+        ];
         return {
-          address: wallet.slice(0, 2) !== '0x' ? `0x${wallet}` : wallet,
-          tags: [
-            {
-              id: 1,
-              name: `${w.address.slice(0, 6)}...${w.address.slice(-4)}`,
-              color: 'green' as TypeTagColor
-            }
-          ],
           privateKey: w.privateKey,
-          type: 'fuel' as WalletType
-        }
+          address: wallet.address,
+          tags: wallet.tags,
+          type: wallet.type
+        };
       })
       return newWallets
     },
 
+    async generateWallets(counts: {type: WalletType, count: number}[]): Promise<IStoredWallet[]> {
+      const newWallets: IWallet[] = []
+      counts.forEach(async ({count, type}) => {
+        switch (type) {
+          case 'evm':
+            newWallets.push(...Array.from({length: count}).map(() => new EvmWallet()))
+            break
+          case 'fuel':
+            newWallets.push(...Array.from({length: count}).map(() => new FuelWallet()))
+            break
+          case 'sol':
+            newWallets.push(...Array.from({length: count}).map(() => new SolanaWallet()))
+            break
+        }
+      });
+
+      return await Promise.all(newWallets.map(async (w) => {
+        return {
+          privateKey: await w.getPrivateKey(),
+          address: w.address,
+          tags: w.tags,
+          type: w.type
+        };
+      }))
+    },
+
     async exportToCSV(wallets: IWallet[]) {
-      const { get } = useStorageStore()
+      const csvLines = await Promise.all(wallets
+        .map(async (w) => `${w.address},${await w.getPrivateKey()}\n`))
 
-      const walletsInStorage: IStoredWallet[] = await get('wallets')
-
-      const csvLines = walletsInStorage
-        .filter((w) =>
-          wallets.map((wallet) => wallet.address.toLowerCase()).includes(w.address.toLowerCase())
-        )
-        .map((w) => `${w.address},${w.privateKey}\n`)
       const valueBlob = new Blob(['Address,PrivateKey\n', ...csvLines], {
         type: 'text/csv;encoding:utf-8'
       })

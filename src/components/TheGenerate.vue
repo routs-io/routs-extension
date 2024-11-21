@@ -2,12 +2,15 @@
 // Imports
 import { ref, computed } from 'vue'
 import { RouterLink } from 'vue-router'
-import type { IGeneratedWallet } from '@/types/wallets'
+import type { IGeneratedWallet, WalletType } from '@/types/wallets'
+import { useWalletsStore } from '@/stores/wallets'
+const { generateWallets, saveWallets } = useWalletsStore()
 
 import AppCounter from '@/components/app/AppCounter.vue'
 import IconEvm from '@/components/icons/IconEvm.vue'
 import IconSolana from '@/components/icons/IconSolana.vue'
 import IconFuel from '@/components/icons/IconFuel.vue'
+import router from '@/router';
 
 // Data
 const generators = ref<IGeneratedWallet[]>([
@@ -18,7 +21,7 @@ const generators = ref<IGeneratedWallet[]>([
   },
   {
     icon: IconSolana,
-    name: 'solana',
+    name: 'sol',
     amount: 0
   },
   {
@@ -34,10 +37,18 @@ const isGenerateDisabled = computed<boolean>(() => {
 })
 
 // Generate
-function generate() {
+async function generate() {
   if (isGenerateDisabled.value) return
 
-  // generate logic
+  const newWallets = await generateWallets(generators.value.map(({ name, amount }) => ({
+    type: name as WalletType,
+    count: amount
+  })));
+
+  console.log('newWallets', newWallets)
+
+  await saveWallets(newWallets);
+  router.push({ name: 'home' })
 }
 </script>
 

@@ -7,7 +7,7 @@ import type { IStoredWallet } from '@/types/wallets'
 import IconX from '@/components/icons/IconX.vue'
 import { useWalletsStore } from '@/stores/wallets'
 
-const { shortenAddress, parseWallets, saveWallets, generateFuelWallets } = useWalletsStore()
+const { shortenAddress, parseWallets, saveWallets, generateFuelWalletsFromEvm } = useWalletsStore()
 const { requestId } = toRefs(useWalletsStore())
 
 const walletsInput = ref<string>('')
@@ -71,11 +71,9 @@ async function loadIcon(walletName: string, index: number) {
 }
 
 onMounted(async () => {
-  console.log(router.currentRoute.value.query)
   if (router.currentRoute.value.query.id) {
     requestId.value = Number(router.currentRoute.value.query.id)
-    wallets.value = await generateFuelWallets(router.currentRoute.value.query.wallets as string[])
-    console.log('wallets.value', wallets.value)
+    wallets.value = await generateFuelWalletsFromEvm(router.currentRoute.value.query.wallets as string[])
     if (!wallets.value.length) await saveWallets(wallets.value)
     wallets.value.forEach((wallet, i) => loadIcon(wallet.type, i))
     if (wallets.value.length) isListShown.value = true

@@ -3,7 +3,7 @@ import type {
     IOutgoingPathStep,
     IPathStep,
     ISignStore,
-    ITransaction,
+    IEvmTransaction,
 } from '@/types/sign'
 import { defineStore } from 'pinia'
 import { useWalletsStore } from '@/stores/wallets'
@@ -20,14 +20,16 @@ export const useSignStore = defineStore('sign', {
             return `${index}-${Math.floor(Math.random() * 1000000)}`
         },
 
-        async signTransaction(transaction: ITransaction): Promise<string> {
+        async signEvmTransaction(transaction: IEvmTransaction): Promise<string> {
+            
             const { from, to, data } = transaction
 
             if (!from || !to || !data) throw new Error('Invalid transaction data')
 
-            const { getSignerByAddress } = useWalletsStore()
+            const { getWalletByAddress } = useWalletsStore()
 
-            const signer = await getSignerByAddress(from.toString())
+            const signer = getWalletByAddress(from.toString())
+            if(!signer) throw new Error('Wallet not found')
             const signedTransaction = await signer.signTransaction(transaction)
             return signedTransaction
         },
@@ -86,7 +88,7 @@ export const useSignStore = defineStore('sign', {
         async signAll() {
             this.path = await Promise.all(this.path.map(async (step) => {
                 if (typeof step.transaction.signedHash !== 'undefined') return step
-                const signedHash = await this.signTransaction(step.transaction)
+                const signedHash = await this.signEvmTransaction(step.transaction)
                 step.transaction.signedHash = signedHash
                 return step
             }))

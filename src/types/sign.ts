@@ -1,6 +1,6 @@
-import { type TransactionRequest } from 'ethers'
+import { type TransactionRequest as EvmTransactionRequest } from 'ethers'
 
-export interface ITransaction extends TransactionRequest {
+export interface IEvmTransaction extends EvmTransactionRequest {
     kind: string
     platform: string
     signedHash?: string | null
@@ -9,12 +9,12 @@ export interface ITransaction extends TransactionRequest {
 export type IPathStep = ServiceConfigInput & {
     id: string;
     address: string;
-    transaction: ITransaction
+    transaction: IEvmTransaction
 }
 
 export type IIncomingPathStep = ServiceConfigInput & {
     address: string
-    transactions: ITransaction[]
+    transactions: IEvmTransaction[]
 }
 
 export type IOutgoingPathStep = {
@@ -23,7 +23,7 @@ export type IOutgoingPathStep = {
     type: string
     service: string
     network: string
-    transactions: ITransaction[]
+    transactions: IEvmTransaction[]
 }
 
 export interface ISignStore {

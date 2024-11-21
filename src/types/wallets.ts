@@ -1,14 +1,8 @@
+import type { IWallet } from "@/logic/wallet/types"
+
 export interface IWalletsStore {
   wallets: IWallet[]
   requestId: number
-}
-
-export interface IWallet {
-  address: string
-  tags: ITag[]
-  status: WalletStatus
-  type: WalletType
-  checked?: boolean
 }
 
 export interface IStoredWallet {
@@ -30,7 +24,7 @@ export interface ITag {
   color: TypeTagColor
 }
 
-export type WalletType = 'evm' | 'fuel' | 'btc' | 'dash' | 'unknown'
+export type WalletType = 'evm' | 'fuel' | 'sol' | 'btc' | 'dash' | 'unknown'
 
 export type WalletStatus = 'online' | 'offline'
 

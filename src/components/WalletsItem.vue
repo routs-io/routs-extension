@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { IWallet } from '@/types/wallets'
+import type { IWallet } from '@/logic/wallet/types'
 
 import IconEvm from '@/components/icons/IconEvm.vue'
 import IconFuel from '@/components/icons/IconFuel.vue'
+import IconSolana from '@/components/icons/IconSolana.vue'
 import AppCheckbox from '@/components/app/AppCheckbox.vue'
 
 import { useWalletsStore } from '@/stores/wallets'
@@ -13,8 +14,6 @@ const { shortenAddress, handleConnection } = useWalletsStore()
 const props = defineProps<{
   wallet: IWallet
 }>()
-
-console.log(props.wallet.type, props.wallet)
 
 const buttonName = computed<string>(() => {
   return props.wallet.status === 'online' ? 'Disconnect' : 'Connect'
@@ -32,7 +31,8 @@ async function handleWalletConnection() {
     <div class="wallet__head">
       <div class="wallet__address">
         <IconEvm v-if="wallet.type === 'evm'" class="wallet__icon" />
-        <IconFuel v-else class="wallet__icon" />
+        <IconFuel v-else-if="wallet.type === 'fuel'" class="wallet__icon" />
+        <IconSolana v-else-if="wallet.type === 'sol'" class="wallet__icon" />
 
         <p>{{ shortenAddress(wallet.address) }}</p>
       </div>

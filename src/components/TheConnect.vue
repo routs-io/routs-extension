@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { toRefs, computed, onMounted } from 'vue'
-import type { IWallet } from '@/types/wallets'
+import type Wallet from '@/logic/wallet/Wallet'
 
 import WalletsItem from '@/components/WalletsItem.vue'
 import { useWalletsStore } from '@/stores/wallets'
@@ -10,8 +10,8 @@ const { wallets } = toRefs(useWalletsStore())
 const { sendWalletsToPage, refreshWallets } = useWalletsStore()
 
 // Computed
-const disconnectedWallets = computed<IWallet[]>(() => {
-  return wallets.value.filter(({ status, type }) => status === 'offline' && type === 'evm')
+const disconnectedWallets = computed<Wallet[]>(() => {
+  return wallets.value.filter((wallet) => wallet.status === 'offline' && wallet.type === 'evm') as Wallet[]
 })
 
 const isSomeChecked = computed<boolean>(() => {

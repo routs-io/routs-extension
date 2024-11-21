@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@fuel-ts/signer": "^0.73.0",
+    "@solana/web3.js": "^1.95.4",
     "ethers": "^6.13.3",
     "pinia": "^2.1.7",
     "vue": "^3.4.29",
@@ -25,6 +26,7 @@
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",
     "@tsconfig/node20": "^20.1.4",
+    "@types/bs58": "^4.0.4",
     "@types/chrome": "^0.0.277",
     "@types/node": "^20.14.5",
     "@vitejs/plugin-vue": "^5.0.5",

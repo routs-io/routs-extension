@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // Imports
 import { onMounted, toRefs, ref, computed } from 'vue'
-import type { IWallet } from '@/types/wallets'
+import type { IWallet } from '@/logic/wallet/types'
 
 import WalletsExport from '@/components/WalletsExport.vue'
 import WalletsItem from '@/components/WalletsItem.vue'
@@ -30,7 +30,7 @@ const buttonConnectName = computed<string>(() => {
 })
 
 const checkedWallets = computed<IWallet[]>(() => {
-  return wallets.value.filter(({ checked }) => checked)
+  return wallets.value.filter((wallet) => wallet.checked)
 })
 
 const buttonExportName = computed<string>(() => {

@@ -14,7 +14,6 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async setPassword(password: string): Promise<boolean> {
-      console.log(this.isRegistered)
       const { set } = useStorageStore()
       await set('password', password)
       this.setIsRegistered(true)

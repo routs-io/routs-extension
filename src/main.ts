@@ -34,7 +34,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       sendResponse({ status: 'success' })
       break
     case 'fuel_generateAccounts':
-      console.log(request.params)
       router.push({ name: 'import', query: { id: request.id, wallets: request.params } })
       sendResponse({ status: 'success' })
       break
