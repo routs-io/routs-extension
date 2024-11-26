@@ -33,6 +33,10 @@ const SUPPORTED_CONTENT_METHODS = [
     "fuel_accounts"
 ]
 
+const SUPPORTED_EVENTS = [
+    "accountsChanged",
+]
+
 function generateId() {
     return Math.floor(Math.random() * 1000000);
 }
@@ -114,6 +118,17 @@ async function waitForResponse(id: number) {
     });
 }
 
+function notifyContentScripts(event: string, data: unknown) {
+    console.log('notifyContentScripts', event, data);
+    chrome.tabs.query({}, (tabs) => {
+        tabs.forEach((tab) => {
+            console.log('notifyContentScripts', tab.id, event, data);
+            if (!tab.id) return;
+            chrome.tabs.sendMessage(tab.id, { type: 'event', event, data });
+        });
+    });
+}
+
 chrome.runtime.onMessageExternal.addListener(async function (request, sender, sendResponse) {
     console.log('background.js', request);
     console.log('external', sender);
@@ -178,6 +193,10 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
     }
     else if (request.type === 'revokeBlob') {
         URL.revokeObjectURL(request.blobURL);
+    }
+
+    if (request.type === 'event' && SUPPORTED_EVENTS.includes(request.event)) {
+        notifyContentScripts(request.event, request.data);
     }
     if (request.direction == 'out' && requests.get(request.id)) {
         const req = requests.get(request.id);

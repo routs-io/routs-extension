@@ -71,6 +71,14 @@ const transactionTextRight = computed(() => {
       return null
   }
 })
+
+const service = computed(() => {
+  return (props.txn.service.slice(0, 1).toUpperCase() + props.txn.service.slice(1)).replace('_', ' ')
+})
+
+const network = computed(() => {
+  return props.txn.network.slice(0, 1).toUpperCase() + props.txn.network.slice(1)
+})
 </script>
 
 <template>
@@ -92,7 +100,7 @@ const transactionTextRight = computed(() => {
       </p>
 
       <p class="txn__services">
-        {{ txn.service }} on {{ txn.network }}
+        {{ service }} on {{ network }}
       </p>
     </div>
   </div>

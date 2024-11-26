@@ -35,6 +35,8 @@ export const useSignStore = defineStore('sign', {
         },
 
         setTransactions(requestId: number, path: IIncomingPathStep[]) {
+            const { refreshWallets } = useWalletsStore()
+            refreshWallets(0);
             this.requestId = requestId
             this.path = path.map((step, index) => {
                 const id = this.generateId(index)

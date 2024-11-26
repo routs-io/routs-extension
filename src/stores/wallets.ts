@@ -119,6 +119,13 @@ export const useWalletsStore = defineStore('wallets', {
         ? wallets.filter((w) => w.address.toLowerCase() !== wallet.address.toLowerCase())
         : [...wallets, wallet]
       await set('connectedWallets', newWallets)
+
+      await chrome.runtime.sendMessage({
+        type: 'event',
+        event: 'accountsChanged',
+        data: newWallets.map((w) => w.address),
+        direction: 'out'
+      })
     },
 
     async connectAll() {
@@ -140,7 +147,7 @@ export const useWalletsStore = defineStore('wallets', {
     },
 
     getWalletByAddress(address: string) {
-      return this.wallets.find((w) => w.address === address)
+      return this.wallets.find((w) => w.address.toLowerCase() === address.toLowerCase())
     },
 
     async refreshWallets(id: number) {

@@ -22,29 +22,4 @@ export const ContentMethods = {
                 .map(a => `${a.slice(0, 6)}...${a.slice(-4)}`.toLowerCase())
                 .indexOf(w.tags[0].name.toLowerCase()) } : w.address);
     },
-
-    /*fuel_generateAccounts: async (addresses: string[]) => {
-        const { get, set } = localStorage;
-        const walletsInStorage: IStoredWallet[] = await get('wallets') ?? [];
-
-        const wallets = walletsInStorage.filter(w => addresses.map(a => a.toLowerCase()).includes(w.address.toLowerCase()));
-
-        if (wallets.length === 0) {
-            return [];
-        }
-
-        const newWallets = wallets.map(w => {
-            const wallet = generateFuelWallet(w.privateKey);
-            return {
-                address: wallet,
-                tags: [{ id: 1, name: `${w.address.slice(0, 6)}...${w.address.slice(-4)}`, color: 'green' as TypeTagColor }],
-                privateKey: w.privateKey,
-                type: 'fuel' as WalletType
-            }
-        });
-
-        set('wallets', walletsInStorage.concat(newWallets));
-
-        return newWallets;
-    }*/
 }
