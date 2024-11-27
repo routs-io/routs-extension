@@ -10,7 +10,7 @@ import type {
 
 import { useStorageStore } from '@/stores/storage'
 import { FuelWallet } from '@/logic/wallet/FuelWallet'
-import type { IWallet } from '@/logic/wallet/types'
+import type { FormattedWallet, IWallet } from '@/logic/wallet/types'
 import { EvmWallet } from '@/logic/wallet/EvmWallet'
 import { SolanaWallet } from '@/logic/wallet/SolanaWallet'
 
@@ -47,6 +47,15 @@ export const useWalletsStore = defineStore('wallets', {
       await chrome.runtime.sendMessage({
         id: this.requestId,
         method,
+        data,
+        direction: 'out'
+      })
+    },
+
+    async sendEvent(event: string, data: unknown) {
+      await chrome.runtime.sendMessage({
+        type: 'event',
+        event,
         data,
         direction: 'out'
       })
@@ -103,29 +112,23 @@ export const useWalletsStore = defineStore('wallets', {
     async handleConnection(wallet: IWallet, status?: boolean) {
       const { get, set } = useStorageStore()
 
-      this.wallets[this.wallets.map(w => w.address).indexOf(wallet.address)].status =
-        typeof status !== 'undefined'
-          ? status
-            ? 'online'
-            : 'offline'
-          : wallet.status === 'offline'
-            ? 'online'
-            : 'offline'
+      if (typeof status !== 'undefined') {
+        this.wallets[this.wallets.map(w => w.address.toLowerCase()).indexOf(wallet.address.toLowerCase())].status = status ? 'online' : 'offline'
+      }
+      else {
+        this.wallets[this.wallets.map(w => w.address.toLowerCase()).indexOf(wallet.address.toLowerCase())].status = wallet.status === 'offline' ? 'online' : 'offline'
+      }
 
-      const wallets: IWallet[] = (await get('connectedWallets')) ?? []
+      const wallets: FormattedWallet[] = (await get('connectedWallets')) ?? []
       const newWallets = wallets
         .map((w) => w.address.toLowerCase())
         .includes(wallet.address.toLowerCase())
         ? wallets.filter((w) => w.address.toLowerCase() !== wallet.address.toLowerCase())
-        : [...wallets, wallet]
-      await set('connectedWallets', newWallets.map(w => w.format()))
+        : [...wallets, wallet.format()]
 
-      await chrome.runtime.sendMessage({
-        type: 'event',
-        event: 'accountsChanged',
-        data: newWallets.map((w) => w.address),
-        direction: 'out'
-      })
+      await set('connectedWallets', newWallets)
+
+      await this.sendEvent('accountsChanged', newWallets)
     },
 
     async connectAll() {
@@ -136,6 +139,7 @@ export const useWalletsStore = defineStore('wallets', {
         .forEach((wallet) => (wallet.status = 'online'))
 
       await set('connectedWallets', Array.from(this.wallets.map(w => w.format())))
+      await this.sendEvent('accountsChanged', Array.from(this.wallets.map(w => w.format())))
     },
 
     async disconnectAll() {
@@ -144,6 +148,7 @@ export const useWalletsStore = defineStore('wallets', {
       this.wallets.forEach((wallet) => (wallet.status = 'offline'))
 
       await set('connectedWallets', [])
+      await this.sendEvent('accountsChanged', [])
     },
 
     getWalletByAddress(address: string) {
@@ -163,11 +168,11 @@ export const useWalletsStore = defineStore('wallets', {
           wallet = new EvmWallet(w.privateKey)
         } else if (w.type === 'fuel') {
           wallet = new FuelWallet(w.privateKey)
-        } else if(w.type === 'sol') {
+        } else if (w.type === 'sol') {
           wallet = new SolanaWallet(w.privateKey)
         }
         else {
-          
+
           console.log('Unknown wallet type', w.type)
           return null
         }
@@ -235,18 +240,18 @@ export const useWalletsStore = defineStore('wallets', {
       return newWallets
     },
 
-    async generateWallets(counts: {type: WalletType, count: number}[]): Promise<IStoredWallet[]> {
+    async generateWallets(counts: { type: WalletType, count: number }[]): Promise<IStoredWallet[]> {
       const newWallets: IWallet[] = []
-      counts.forEach(async ({count, type}) => {
+      counts.forEach(async ({ count, type }) => {
         switch (type) {
           case 'evm':
-            newWallets.push(...Array.from({length: count}).map(() => new EvmWallet()))
+            newWallets.push(...Array.from({ length: count }).map(() => new EvmWallet()))
             break
           case 'fuel':
-            newWallets.push(...Array.from({length: count}).map(() => new FuelWallet()))
+            newWallets.push(...Array.from({ length: count }).map(() => new FuelWallet()))
             break
           case 'sol':
-            newWallets.push(...Array.from({length: count}).map(() => new SolanaWallet()))
+            newWallets.push(...Array.from({ length: count }).map(() => new SolanaWallet()))
             break
         }
       });

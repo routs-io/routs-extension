@@ -1,6 +1,6 @@
 import { useStorageStore } from "@/stores/storage";
 import type { IStoredWallet, ITag, TypeTagColor, WalletStatus, WalletType } from "@/types/wallets";
-import type { IWallet } from "./types";
+import type { FormattedWallet, IWallet } from "./types";
 
 export default abstract class Wallet implements IWallet {
     address: string;
@@ -8,7 +8,7 @@ export default abstract class Wallet implements IWallet {
     type: WalletType;
     status: WalletStatus = 'offline';
     private privateKey: string;
-    checked?: boolean;
+    checked: boolean = false;
 
     constructor(private pk?: string) {
         if(!pk) {
@@ -45,11 +45,7 @@ export default abstract class Wallet implements IWallet {
         return wallet.privateKey;
     }
 
-    format(): {
-        address: string;
-        tags: ITag[];
-        type: WalletType;
-    } {
+    format(): FormattedWallet {
         return {
             address: this.address,
             tags: this.tags,

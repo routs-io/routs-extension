@@ -9,9 +9,11 @@ export interface IWallet {
 
     getPrivateKey(): Promise<string>;
 
-    format(): {
-        address: string;
-        tags: ITag[];
-        type: WalletType;
-    }
+    format(): FormattedWallet;
+}
+
+export type FormattedWallet = {
+    address: string;
+    tags: ITag[];
+    type: WalletType;
 }

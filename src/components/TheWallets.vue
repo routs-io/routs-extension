@@ -22,7 +22,7 @@ const total = computed<string>(() => {
 })
 
 const isSomeWalletOffline = computed<boolean>(() => {
-  return wallets.value.some((el) => el.status === 'offline')
+  return wallets.value.filter(w => w.type === 'evm').some((el) => el.status === 'offline')
 })
 
 const buttonConnectName = computed<string>(() => {
