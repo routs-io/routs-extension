@@ -118,7 +118,7 @@ export const useWalletsStore = defineStore('wallets', {
         .includes(wallet.address.toLowerCase())
         ? wallets.filter((w) => w.address.toLowerCase() !== wallet.address.toLowerCase())
         : [...wallets, wallet]
-      await set('connectedWallets', newWallets)
+      await set('connectedWallets', newWallets.map(w => w.format()))
 
       await chrome.runtime.sendMessage({
         type: 'event',
@@ -135,7 +135,7 @@ export const useWalletsStore = defineStore('wallets', {
         .filter(({ type }) => type === 'evm')
         .forEach((wallet) => (wallet.status = 'online'))
 
-      await set('connectedWallets', Array.from(this.wallets))
+      await set('connectedWallets', Array.from(this.wallets.map(w => w.format())))
     },
 
     async disconnectAll() {
@@ -195,7 +195,7 @@ export const useWalletsStore = defineStore('wallets', {
         )
       }
 
-      await set('connectedWallets', Array.from(this.wallets.filter((w) => w.status === 'online')))
+      await set('connectedWallets', Array.from(this.wallets.filter((w) => w.status === 'online').map(w => w.format())))
 
       await this.sendMessage(
         'eth_requestAccounts',

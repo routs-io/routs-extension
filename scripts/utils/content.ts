@@ -7,7 +7,11 @@ export const ContentMethods = {
         const { get } = localStorage;
         const connectedWallets: IWallet[] = await get('connectedWallets') ?? [];
 
-        return connectedWallets.filter(w => w.type === 'evm').map(w => w.address);
+        return connectedWallets.filter(w => w.type === 'evm').map(w => ({
+            address: w.address,
+            type: w.type,
+            tags: w.tags
+        }));
     },
 
     fuel_accounts: async (evmFilterAddresses?: string[]) => {

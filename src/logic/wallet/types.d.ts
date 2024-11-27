@@ -8,4 +8,10 @@ export interface IWallet {
     signTransaction(transaction: object): Promise<string>;
 
     getPrivateKey(): Promise<string>;
+
+    format(): {
+        address: string;
+        tags: ITag[];
+        type: WalletType;
+    }
 }

@@ -45,6 +45,18 @@ export default abstract class Wallet implements IWallet {
         return wallet.privateKey;
     }
 
+    format(): {
+        address: string;
+        tags: ITag[];
+        type: WalletType;
+    } {
+        return {
+            address: this.address,
+            tags: this.tags,
+            type: this.type
+        };
+    }
+
     // Returns the wallet type
     protected abstract getType(): WalletType;
 }
