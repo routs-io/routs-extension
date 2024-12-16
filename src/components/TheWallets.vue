@@ -5,8 +5,10 @@ import type { IWallet } from '@/logic/wallet/types'
 
 import WalletsExport from '@/components/WalletsExport.vue'
 import WalletsItem from '@/components/WalletsItem.vue'
+import AppSearch from '@/components/app/AppSearch.vue'
 import IconAdd from '@/components/icons/IconAdd.vue'
 import IconFlash from '@/components/icons/IconFlash.vue'
+import IconSearch from '@/components/icons/IconSearch.vue'
 import IconShare from '@/components/icons/IconShare.vue'
 import IconDelete from '@/components/icons/IconDelete.vue'
 
@@ -31,13 +33,29 @@ const buttonConnectName = computed<string>(() => {
 })
 
 const checkedWallets = computed<IWallet[]>(() => {
-  return wallets.value.filter((wallet) => wallet.checked)
+  return wallets.value.filter(({ checked }) => checked)
 })
 
 const buttonExportName = computed<string>(() => {
   const amount = checkedWallets.value.length
   return `Export ${amount} wallet${amount > 1 ? 's' : ''}`
 })
+
+// Search
+const isSearch = ref<boolean>(false)
+const search = ref<string>('')
+
+const filteredWallets = computed<IWallet[]>(() => {
+  return wallets.value.filter(
+    ({ address, tags }) =>
+      address.includes(search.value) || tags.some((tag) => tag.name.includes(search.value))
+  )
+})
+
+function toggleSearch() {
+  isSearch.value = !isSearch.value
+  search.value = ''
+}
 
 // Connect
 async function handleConnections() {
@@ -77,6 +95,11 @@ onMounted(async () => await refreshWallets(0))
         <RouterLink v-if="wallets.length" class="btn-icon" to="/generate">
           <IconFlash />
         </RouterLink>
+
+        <button class="btn-icon" @click="toggleSearch">
+          <IconSearch />
+        </button>
+
         <RouterLink v-if="wallets.length" class="btn-icon" to="/import">
           <IconAdd />
         </RouterLink>
@@ -85,6 +108,10 @@ onMounted(async () => await refreshWallets(0))
 
     <div class="wallets">
       <template v-if="wallets.length">
+        <!-- Search -->
+        <AppSearch v-if="isSearch" v-model="search" />
+
+        <!-- Total -->
         <div class="wallets__head">
           <p>{{ total }}</p>
 
@@ -97,8 +124,9 @@ onMounted(async () => await refreshWallets(0))
           </button>
         </div>
 
+        <!-- Wallets -->
         <div class="wallets__list">
-          <WalletsItem class="wallet" v-for="(wallet, i) in wallets" :key="i" :wallet />
+          <WalletsItem class="wallet" v-for="(wallet, i) in filteredWallets" :key="i" :wallet />
         </div>
       </template>
 
