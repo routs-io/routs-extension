@@ -1,20 +1,29 @@
 import { type TransactionRequest as EvmTransactionRequest } from 'ethers'
 
+export type PLATFORMS = "evm" | "sol" | "fuel" | "unknown";
+
 export interface IEvmTransaction extends EvmTransactionRequest {
     kind: string
-    platform: string
+    platform: PLATFORMS
+    signedHash?: string | null
+}
+
+export interface ISolTransaction {
+    kind: string
+    platform: PLATFORMS
+    data: string
     signedHash?: string | null
 }
 
 export type IPathStep = ServiceConfigInput & {
     id: string;
     address: string;
-    transaction: IEvmTransaction
+    transaction: IEvmTransaction | ISolTransaction
 }
 
 export type IIncomingPathStep = ServiceConfigInput & {
     address: string
-    transactions: IEvmTransaction[]
+    transactions: (IEvmTransaction | ISolTransaction)[]
 }
 
 export type IOutgoingPathStep = {
@@ -23,7 +32,7 @@ export type IOutgoingPathStep = {
     type: string
     service: string
     network: string
-    transactions: IEvmTransaction[]
+    transactions: (IEvmTransaction | ISolTransaction)[]
 }
 
 export interface ISignStore {

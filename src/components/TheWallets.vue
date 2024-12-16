@@ -11,6 +11,7 @@ import IconShare from '@/components/icons/IconShare.vue'
 import IconDelete from '@/components/icons/IconDelete.vue'
 
 import { useWalletsStore } from '@/stores/wallets'
+import Wallet from '@/logic/wallet/Wallet'
 
 const { wallets } = toRefs(useWalletsStore())
 const { refreshWallets, connectAll, disconnectAll, exportToCSV } = useWalletsStore()
@@ -22,7 +23,7 @@ const total = computed<string>(() => {
 })
 
 const isSomeWalletOffline = computed<boolean>(() => {
-  return wallets.value.filter(w => w.type === 'evm').some((el) => el.status === 'offline')
+  return wallets.value.filter(w => Wallet.AVAILABLE_SIGNER_TYPES.includes(w.type)).some((el) => el.status === 'offline')
 })
 
 const buttonConnectName = computed<string>(() => {

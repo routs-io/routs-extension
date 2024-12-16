@@ -7,7 +7,7 @@ import type { IStoredWallet } from '@/types/wallets'
 import IconX from '@/components/icons/IconX.vue'
 import { useWalletsStore } from '@/stores/wallets'
 
-const { shortenAddress, parseWallets, saveWallets, generateFuelWalletsFromEvm } = useWalletsStore()
+const { shortenAddress, parseWallets, saveWallets, generateFuelWalletsFromEvm, detectPrivateKeyType } = useWalletsStore()
 const { requestId } = toRefs(useWalletsStore())
 
 const walletsInput = ref<string>('')
@@ -35,7 +35,7 @@ async function parsePrivateKeys() {
         .split('\n')
         .map((wallet) => wallet.trim())
         .filter((wallet) => wallet.length > 0)
-        .filter((wallet) => /^(0x)?[0-9a-fA-F]{64}$/.test(wallet))
+        .filter((wallet) => detectPrivateKeyType(wallet) !== 'unknown')
     )
   )
 

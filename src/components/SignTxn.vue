@@ -14,6 +14,8 @@ const props = defineProps<{
   txn: IPathStep
 }>()
 
+console.log(props.txn);
+
 const formattedAllowance = computed(() => {
   const K = 1000n
   const M = K * K
@@ -45,6 +47,8 @@ const transactionTextLeft = computed(() => {
       return `Send message via Dmail`
     case 'lending':
       return `${props.txn.direction!.slice(0, 1).toUpperCase() + props.txn.direction!.slice(1)} ${formattedAmountIn.value}`
+    case 'deposit':
+      return `Deposit ${formattedAmountIn.value}`
     default:
       if(props.txn.service === 'fuelmigration') return `Deposit ${formattedAmountIn.value}` 
       return 'unknown'
@@ -66,6 +70,8 @@ const transactionTextRight = computed(() => {
       return null
     case 'lending':
       return `${props.txn.token}`
+    case 'deposit':
+      return null
     default:
       if(props.txn.service === 'fuelmigration') return null
       return null
@@ -84,7 +90,7 @@ const network = computed(() => {
 <template>
   <div class="txn">
     <div class="txn__box">
-      <p class="txn__address">{{ shortenAddress(txn.transaction.from!.toString()) }}</p>
+      <p class="txn__address">{{ shortenAddress(txn.address) }}</p>
 
       <!-- div class="txn__tags" -->
       <!-- TODO: change tags -->

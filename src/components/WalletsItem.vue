@@ -8,6 +8,7 @@ import IconSolana from '@/components/icons/IconSolana.vue'
 import AppCheckbox from '@/components/app/AppCheckbox.vue'
 
 import { useWalletsStore } from '@/stores/wallets'
+import Wallet from '@/logic/wallet/Wallet'
 
 const { shortenAddress, handleConnection } = useWalletsStore()
 
@@ -45,7 +46,7 @@ async function handleWalletConnection() {
     </div>
 
     <button
-      v-if="wallet.type === 'evm'"
+      v-if="Wallet.AVAILABLE_SIGNER_TYPES.includes(wallet.type)"
       class="button wallet__btn"
       :class="{ 'button--red': wallet.status === 'online' }"
       @click="handleWalletConnection"

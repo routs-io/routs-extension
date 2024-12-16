@@ -4,7 +4,7 @@ import Wallet from "./Wallet";
 import { Buffer } from 'buffer';
 
 export class FuelWallet extends Wallet {
-    protected generateAddress(privateKey: string): string {
+    protected async generateAddress(privateKey: string): Promise<string> {
         const fWallet = new FuelSigner(privateKey)
         return fWallet.address.toB256()
     }

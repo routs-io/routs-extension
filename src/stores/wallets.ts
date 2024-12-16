@@ -1,6 +1,4 @@
 import { defineStore } from 'pinia'
-import { Wallet as EthersWallet } from 'ethers'
-
 import type {
   IStoredWallet,
   IWalletsStore,
@@ -13,6 +11,7 @@ import { FuelWallet } from '@/logic/wallet/FuelWallet'
 import type { FormattedWallet, IWallet } from '@/logic/wallet/types'
 import { EvmWallet } from '@/logic/wallet/EvmWallet'
 import { SolanaWallet } from '@/logic/wallet/SolanaWallet'
+import Wallet from '@/logic/wallet/Wallet'
 
 export const useWalletsStore = defineStore('wallets', {
   state: (): IWalletsStore => ({
@@ -27,19 +26,31 @@ export const useWalletsStore = defineStore('wallets', {
     },
 
     async parseWallets(privateKeys: string[]): Promise<IStoredWallet[]> {
-      return privateKeys.map((pk) => ({
-        privateKey: pk,
-        address: new EthersWallet(pk).address,
-        tags: [],
-        type: this.detectWalletType(new EthersWallet(pk).address)
+      return await Promise.all(privateKeys.map(async (pk) => {
+        const newWallet = this.detectPrivateKeyType(pk) === 'evm' ? new EvmWallet(pk) : new SolanaWallet(pk)
+
+        await new Promise(resolve => setTimeout(resolve, 10));
+
+        return {
+          privateKey: pk,
+          address: newWallet.address,
+          tags: [],
+          type: newWallet.type
+        }
       }))
     },
 
-    detectWalletType(address: string): WalletType {
+    detectAddressType(address: string): WalletType {
       if (/^0x[a-fA-F0-9]{40}$/g.test(address)) return 'evm'
       else if (/^0x[a-fA-F0-9]{64}$/g.test(address)) return 'fuel'
       else if (/^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/g.test(address)) return 'btc'
       else if (/^[1-9A-HJ-NP-Za-km-z]{32,44}$/g.test(address)) return 'sol'
+      else return 'unknown'
+    },
+
+    detectPrivateKeyType(privateKey: string): WalletType {
+      if (/^[0-9a-fA-F]{64}$/.test(privateKey)) return 'evm'
+      else if (/^[0-9a-zA-Z]{88}$/.test(privateKey)) return 'sol'
       else return 'unknown'
     },
 
@@ -95,7 +106,7 @@ export const useWalletsStore = defineStore('wallets', {
           wallets.find((w) => w.address.toLowerCase() === address)?.tags ??
           []
         ),
-        type: this.detectWalletType(address)
+        type: this.detectAddressType(address)
       }))
 
       await set('wallets', uniqueWallets)
@@ -135,7 +146,7 @@ export const useWalletsStore = defineStore('wallets', {
       const { set } = useStorageStore()
 
       this.wallets
-        .filter(({ type }) => type === 'evm')
+        .filter(({ type }) => Wallet.AVAILABLE_SIGNER_TYPES.includes(type))
         .forEach((wallet) => (wallet.status = 'online'))
 
       await set('connectedWallets', Array.from(this.wallets.map(w => w.format())))
@@ -161,9 +172,9 @@ export const useWalletsStore = defineStore('wallets', {
       const wallets: IStoredWallet[] = await get('wallets')
       const connectedWallets: IWallet[] = (await get('connectedWallets')) ?? []
 
-      this.wallets = wallets.map((w) => {
+      this.wallets = (await Promise.all(wallets.map(async (w) => {
         let wallet: IWallet;
-        w.type = this.detectWalletType(w.address)
+        w.type = this.detectAddressType(w.address)
         if (w.type === 'evm') {
           wallet = new EvmWallet(w.privateKey)
         } else if (w.type === 'fuel') {
@@ -172,10 +183,11 @@ export const useWalletsStore = defineStore('wallets', {
           wallet = new SolanaWallet(w.privateKey)
         }
         else {
-
           console.log('Unknown wallet type', w.type)
           return null
         }
+
+        await new Promise(resolve => setTimeout(resolve, 10));
 
         wallet.tags = w.tags ?? []
         wallet.status = connectedWallets
@@ -184,7 +196,7 @@ export const useWalletsStore = defineStore('wallets', {
           ? 'online'
           : 'offline'
         return wallet
-      }).filter(w => w !== null)
+      }))).filter(w => w !== null)
     },
 
     async sendWalletsToPage(useChecked: boolean = false) {
@@ -255,6 +267,8 @@ export const useWalletsStore = defineStore('wallets', {
             break
         }
       });
+
+      await new Promise(resolve => setTimeout(resolve, 10));
 
       return await Promise.all(newWallets.map(async (w) => {
         return {

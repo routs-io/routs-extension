@@ -4,6 +4,7 @@ import type {
     IPathStep,
     ISignStore,
     IEvmTransaction,
+    ISolTransaction,
 } from '@/types/sign'
 import { defineStore } from 'pinia'
 import { useWalletsStore } from '@/stores/wallets'
@@ -20,7 +21,7 @@ export const useSignStore = defineStore('sign', {
             return `${index}-${Math.floor(Math.random() * 1000000)}`
         },
 
-        async signEvmTransaction(transaction: IEvmTransaction): Promise<string> {
+        async signEvmTransaction(transaction: IEvmTransaction, wallet: string): Promise<string> {
             
             const { from, to, data } = transaction
 
@@ -28,15 +29,26 @@ export const useSignStore = defineStore('sign', {
 
             const { getWalletByAddress } = useWalletsStore()
 
-            const signer = getWalletByAddress(from.toString())
+            const signer = getWalletByAddress(wallet)
             if(!signer) throw new Error('Wallet not found')
             const signedTransaction = await signer.signTransaction(transaction)
+            return signedTransaction
+        },
+
+        async signSolTransaction(transaction: ISolTransaction, wallet: string): Promise<string> {
+            const { getWalletByAddress } = useWalletsStore()
+
+            const signer = getWalletByAddress(wallet)
+            if(!signer) throw new Error('Wallet not found')
+            const signedTransaction = await signer.signTransaction(transaction);
+            console.log('in signSolTransaction', signedTransaction);
             return signedTransaction
         },
 
         setTransactions(requestId: number, path: IIncomingPathStep[]) {
             const { refreshWallets } = useWalletsStore()
             refreshWallets(0);
+            console.log(path);
             this.requestId = requestId
             this.path = path.map((step, index) => {
                 const id = this.generateId(index)
@@ -89,8 +101,14 @@ export const useSignStore = defineStore('sign', {
 
         async signAll() {
             this.path = await Promise.all(this.path.map(async (step) => {
-                if (typeof step.transaction.signedHash !== 'undefined') return step
-                const signedHash = await this.signEvmTransaction(step.transaction)
+                if (typeof step.transaction.signedHash !== 'undefined') return step;
+                let signedHash: string | null = null;
+                if(step.transaction.platform === 'evm') {
+                    signedHash = await this.signEvmTransaction(step.transaction as IEvmTransaction, step.address)
+                }
+                else if(step.transaction.platform === 'sol') {
+                    signedHash = await this.signSolTransaction(step.transaction as ISolTransaction, step.address)
+                }
                 step.transaction.signedHash = signedHash
                 return step
             }))

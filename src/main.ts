@@ -2,6 +2,8 @@ import './assets/scss/main.scss'
 
 import { createApp, toRefs } from 'vue'
 import { createPinia } from 'pinia'
+import { install } from '@solana/webcrypto-ed25519-polyfill';
+install()
 
 import App from './App.vue'
 import router from './router'

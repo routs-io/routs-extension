@@ -1,34 +1,49 @@
 import type { WalletType } from "@/types/wallets";
 import Wallet from "./Wallet";
-import { Keypair as SolanaSigner } from "@solana/web3.js";
-import * as bs58 from "bs58";
+import { createKeyPairSignerFromPrivateKeyBytes, type KeyPairSigner, signTransaction, getBase64Encoder, getBase64Decoder, getTransactionDecoder, getTransactionEncoder,  getBase58Codec } from "@solana/web3.js";
+import type { ISolTransaction } from "@/types/sign";
 
 export class SolanaWallet extends Wallet {
-    protected generateAddress(privateKey: string): string {
-        const sWallet = SolanaSigner.fromSecretKey(
-            bs58.decode(
+    protected async generateAddress(privateKey: string): Promise<string> {
+        console.log(privateKey);
+        const sWallet = await createKeyPairSignerFromPrivateKeyBytes(
+            getBase58Codec().encode(
                 privateKey,
-            ),
-          );
-        console.log('sWallet', sWallet);
-        return sWallet.publicKey.toString();
+            ).slice(0, 32),
+        );
+        
+        console.log(sWallet);
+        return sWallet.address;
     }
 
     protected generatePrivateKey(): string {
-        return bs58.encode(SolanaSigner.generate().secretKey);
+        const bytes = new Uint8Array(8);
+
+        return getBase58Codec().decode(window.crypto.getRandomValues(bytes));
     }
 
-    async getSigner(): Promise<SolanaSigner> {
+    async getSigner(): Promise<KeyPairSigner> {
         const privateKey = await this.getPrivateKey()
-        return SolanaSigner.fromSecretKey(
-            bs58.decode(
+        return await createKeyPairSignerFromPrivateKeyBytes(
+            getBase58Codec().encode(
                 privateKey,
-            ),
-          );
+            ).slice(0, 32),
+        );
     }
 
-    async signTransaction(transaction: object): Promise<string> {
-        throw new Error('Not implemented');
+    async signTransaction(transaction: ISolTransaction): Promise<string> {
+        const signer = await this.getSigner();
+
+        const base64Encoder = getBase64Encoder();
+        const base64Decoder = getBase64Decoder();
+        const txDecoder = getTransactionDecoder();
+        const txEncoder = getTransactionEncoder();
+
+        const decodedTransaction = txDecoder.decode(base64Encoder.encode(transaction.data));
+        
+        const signedTransaction = await signTransaction([signer.keyPair], decodedTransaction);
+
+        return base64Decoder.decode(txEncoder.encode(signedTransaction));
     }
 
     protected getType(): WalletType {

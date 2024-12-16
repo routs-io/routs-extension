@@ -21,13 +21,18 @@ export default abstract class Wallet implements IWallet {
             });
         }
         this.privateKey = pk;
-        this.address = this.generateAddress(pk);
+        this.address = "Not initialized";
         this.type = this.getType();
+        this.initAddress(pk);
     }
 
-    static readonly AVAILABLE_SIGNER_TYPES: string[] = ['evm']
+    private async initAddress(pk: string) {
+        this.address = await this.generateAddress(pk);
+    }
 
-    protected abstract generateAddress(privateKey: string): string;
+    static readonly AVAILABLE_SIGNER_TYPES: string[] = ['evm', 'sol']
+
+    protected abstract generateAddress(privateKey: string): Promise<string>;
 
     protected abstract getSigner(): Promise<unknown>;
 

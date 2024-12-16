@@ -7,8 +7,9 @@ import IconX from '@/components/icons/IconX.vue'
 import IconArrowShort from '@/components/icons/IconArrowShort.vue'
 
 import { useSignStore } from '@/stores/sign'
+import type { IEvmTransaction, ISolTransaction } from '@/types/sign'
 
-const { signEvmTransaction, signAll, rejectAll, sendTransactionsToPage } = useSignStore()
+const { signEvmTransaction, signSolTransaction, signAll, rejectAll, sendTransactionsToPage } = useSignStore()
 const { path } = toRefs(useSignStore())
 
 const currentIndex = ref<number>(0)
@@ -49,9 +50,14 @@ const isAllSigned = computed<boolean>(() => {
 })
 
 async function signTxn() {
-  const signedHash = await signEvmTransaction(path.value[currentIndex.value].transaction)
-
-  path.value[currentIndex.value].transaction.signedHash = signedHash
+  if(path.value[currentIndex.value].transaction.platform === 'evm') {
+    const signedHash = await signEvmTransaction(path.value[currentIndex.value].transaction as IEvmTransaction, path.value[currentIndex.value].address)
+    path.value[currentIndex.value].transaction.signedHash = signedHash
+  }
+  else if(path.value[currentIndex.value].transaction.platform === 'sol') {
+    const signedHash = await signSolTransaction(path.value[currentIndex.value].transaction as ISolTransaction, path.value[currentIndex.value].address)
+    path.value[currentIndex.value].transaction.signedHash = signedHash
+  }
 
   if (isAllSigned.value) await sendTransactionsToPage()
   else nextTxn()

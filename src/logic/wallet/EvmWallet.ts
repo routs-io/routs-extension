@@ -4,7 +4,7 @@ import { Wallet as EvmSigner } from "ethers";
 import type { IEvmTransaction } from "@/types/sign";
 
 export class EvmWallet extends Wallet {
-    protected generateAddress(privateKey: string): string {
+    protected async generateAddress(privateKey: string): Promise<string> {
         const eWallet = new EvmSigner(privateKey);
         return eWallet.address;
     }

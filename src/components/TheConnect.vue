@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { toRefs, computed, onMounted } from 'vue'
-import type Wallet from '@/logic/wallet/Wallet'
+import Wallet from '@/logic/wallet/Wallet'
 
 import WalletsItem from '@/components/WalletsItem.vue'
 import { useWalletsStore } from '@/stores/wallets'
@@ -11,7 +11,7 @@ const { sendWalletsToPage, refreshWallets } = useWalletsStore()
 
 // Computed
 const disconnectedWallets = computed<Wallet[]>(() => {
-  return wallets.value.filter((wallet) => wallet.status === 'offline' && wallet.type === 'evm') as Wallet[]
+  return wallets.value.filter((wallet) => wallet.status === 'offline' && Wallet.AVAILABLE_SIGNER_TYPES.includes(wallet.type)) as Wallet[]
 })
 
 const isSomeChecked = computed<boolean>(() => {
@@ -26,7 +26,7 @@ const buttonName = computed<string>(() => {
 async function connect() {
   if (!isSomeChecked.value) {
     wallets.value.forEach((wallet) => {
-      if (wallet.type === 'evm') wallet.checked = true
+      if (Wallet.AVAILABLE_SIGNER_TYPES.includes(wallet.type)) wallet.checked = true
     })
   }
 
