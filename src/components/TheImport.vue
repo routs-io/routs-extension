@@ -7,7 +7,13 @@ import type { IStoredWallet } from '@/types/wallets'
 import IconX from '@/components/icons/IconX.vue'
 import { useWalletsStore } from '@/stores/wallets'
 
-const { shortenAddress, parseWallets, saveWallets, generateFuelWalletsFromEvm, detectPrivateKeyType } = useWalletsStore()
+const {
+  shortenAddress,
+  parseWallets,
+  saveWallets,
+  generateFuelWalletsFromEvm,
+  detectPrivateKeyType
+} = useWalletsStore()
 const { requestId } = toRefs(useWalletsStore())
 
 const walletsInput = ref<string>('')
@@ -53,7 +59,7 @@ async function parsePrivateKeys() {
 async function importWallets() {
   await saveWallets(wallets.value)
   isListShown.value = false
-  router.push({ name: 'home' })
+  router.push({ name: 'wallets' })
 }
 
 function handleButton() {
@@ -73,7 +79,9 @@ async function loadIcon(walletName: string, index: number) {
 onMounted(async () => {
   if (router.currentRoute.value.query.id) {
     requestId.value = Number(router.currentRoute.value.query.id)
-    wallets.value = await generateFuelWalletsFromEvm(router.currentRoute.value.query.wallets as string[])
+    wallets.value = await generateFuelWalletsFromEvm(
+      router.currentRoute.value.query.wallets as string[]
+    )
     if (!wallets.value.length) await saveWallets(wallets.value)
     wallets.value.forEach((wallet, i) => loadIcon(wallet.type, i))
     if (wallets.value.length) isListShown.value = true

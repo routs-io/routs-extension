@@ -10,7 +10,7 @@ import AppCounter from '@/components/app/AppCounter.vue'
 import IconEvm from '@/components/icons/IconEvm.vue'
 import IconSolana from '@/components/icons/IconSolana.vue'
 import IconFuel from '@/components/icons/IconFuel.vue'
-import router from '@/router';
+import router from '@/router'
 
 // Data
 const generators = ref<IGeneratedWallet[]>([
@@ -40,15 +40,17 @@ const isGenerateDisabled = computed<boolean>(() => {
 async function generate() {
   if (isGenerateDisabled.value) return
 
-  const newWallets = await generateWallets(generators.value.map(({ name, amount }) => ({
-    type: name as WalletType,
-    count: amount
-  })));
+  const newWallets = await generateWallets(
+    generators.value.map(({ name, amount }) => ({
+      type: name as WalletType,
+      count: amount
+    }))
+  )
 
   console.log('newWallets', newWallets)
 
-  await saveWallets(newWallets);
-  router.push({ name: 'home' })
+  await saveWallets(newWallets)
+  router.push({ name: 'wallets' })
 }
 </script>
 
@@ -75,7 +77,7 @@ async function generate() {
 
     <div class="section__bottom">
       <div class="section__connection">
-        <RouterLink class="button button--md button--outline" to="/"> Cancel </RouterLink>
+        <RouterLink class="button button--md button--outline" to="/wallets"> Cancel </RouterLink>
 
         <button
           class="button button--md button--blue"

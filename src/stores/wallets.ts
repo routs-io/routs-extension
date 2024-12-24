@@ -1,10 +1,5 @@
 import { defineStore } from 'pinia'
-import type {
-  IStoredWallet,
-  IWalletsStore,
-  TypeTagColor,
-  WalletType
-} from '@/types/wallets'
+import type { IStoredWallet, IWalletsStore, TypeTagColor, WalletType } from '@/types/wallets'
 
 import { useStorageStore } from '@/stores/storage'
 import { FuelWallet } from '@/logic/wallet/FuelWallet'
@@ -26,18 +21,21 @@ export const useWalletsStore = defineStore('wallets', {
     },
 
     async parseWallets(privateKeys: string[]): Promise<IStoredWallet[]> {
-      return await Promise.all(privateKeys.map(async (pk) => {
-        const newWallet = this.detectPrivateKeyType(pk) === 'evm' ? new EvmWallet(pk) : new SolanaWallet(pk)
+      return await Promise.all(
+        privateKeys.map(async (pk) => {
+          const newWallet =
+            this.detectPrivateKeyType(pk) === 'evm' ? new EvmWallet(pk) : new SolanaWallet(pk)
 
-        await new Promise(resolve => setTimeout(resolve, 10));
+          await new Promise((resolve) => setTimeout(resolve, 10))
 
-        return {
-          privateKey: pk,
-          address: newWallet.address,
-          tags: [],
-          type: newWallet.type
-        }
-      }))
+          return {
+            privateKey: pk,
+            address: newWallet.address,
+            tags: [],
+            type: newWallet.type
+          }
+        })
+      )
     },
 
     detectAddressType(address: string): WalletType {
@@ -103,8 +101,8 @@ export const useWalletsStore = defineStore('wallets', {
           wallets.find((w) => w.address.toLowerCase() === address)?.address,
         tags: Array.from(
           walletsInStorage.find((w) => w.address.toLowerCase() === address)?.tags ??
-          wallets.find((w) => w.address.toLowerCase() === address)?.tags ??
-          []
+            wallets.find((w) => w.address.toLowerCase() === address)?.tags ??
+            []
         ),
         type: this.detectAddressType(address)
       }))
@@ -124,10 +122,13 @@ export const useWalletsStore = defineStore('wallets', {
       const { get, set } = useStorageStore()
 
       if (typeof status !== 'undefined') {
-        this.wallets[this.wallets.map(w => w.address.toLowerCase()).indexOf(wallet.address.toLowerCase())].status = status ? 'online' : 'offline'
-      }
-      else {
-        this.wallets[this.wallets.map(w => w.address.toLowerCase()).indexOf(wallet.address.toLowerCase())].status = wallet.status === 'offline' ? 'online' : 'offline'
+        this.wallets[
+          this.wallets.map((w) => w.address.toLowerCase()).indexOf(wallet.address.toLowerCase())
+        ].status = status ? 'online' : 'offline'
+      } else {
+        this.wallets[
+          this.wallets.map((w) => w.address.toLowerCase()).indexOf(wallet.address.toLowerCase())
+        ].status = wallet.status === 'offline' ? 'online' : 'offline'
       }
 
       const wallets: FormattedWallet[] = (await get('connectedWallets')) ?? []
@@ -149,8 +150,8 @@ export const useWalletsStore = defineStore('wallets', {
         .filter(({ type }) => Wallet.AVAILABLE_SIGNER_TYPES.includes(type))
         .forEach((wallet) => (wallet.status = 'online'))
 
-      await set('connectedWallets', Array.from(this.wallets.map(w => w.format())))
-      await this.sendEvent('accountsChanged', Array.from(this.wallets.map(w => w.format())))
+      await set('connectedWallets', Array.from(this.wallets.map((w) => w.format())))
+      await this.sendEvent('accountsChanged', Array.from(this.wallets.map((w) => w.format())))
     },
 
     async disconnectAll() {
@@ -169,34 +170,37 @@ export const useWalletsStore = defineStore('wallets', {
     async refreshWallets(id: number) {
       this.requestId = id
       const { get } = useStorageStore()
-      const wallets: IStoredWallet[] = await get('wallets')
+      const wallets: IStoredWallet[] = (await get('wallets')) ?? []
       const connectedWallets: IWallet[] = (await get('connectedWallets')) ?? []
 
-      this.wallets = (await Promise.all(wallets.map(async (w) => {
-        let wallet: IWallet;
-        w.type = this.detectAddressType(w.address)
-        if (w.type === 'evm') {
-          wallet = new EvmWallet(w.privateKey)
-        } else if (w.type === 'fuel') {
-          wallet = new FuelWallet(w.privateKey)
-        } else if (w.type === 'sol') {
-          wallet = new SolanaWallet(w.privateKey)
-        }
-        else {
-          console.log('Unknown wallet type', w.type)
-          return null
-        }
+      this.wallets = (
+        await Promise.all(
+          wallets.map(async (w) => {
+            let wallet: IWallet
+            w.type = this.detectAddressType(w.address)
+            if (w.type === 'evm') {
+              wallet = new EvmWallet(w.privateKey)
+            } else if (w.type === 'fuel') {
+              wallet = new FuelWallet(w.privateKey)
+            } else if (w.type === 'sol') {
+              wallet = new SolanaWallet(w.privateKey)
+            } else {
+              console.log('Unknown wallet type', w.type)
+              return null
+            }
 
-        await new Promise(resolve => setTimeout(resolve, 10));
+            await new Promise((resolve) => setTimeout(resolve, 10))
 
-        wallet.tags = w.tags ?? []
-        wallet.status = connectedWallets
-          .map((w) => w.address.toLowerCase())
-          .includes(w.address.toLowerCase())
-          ? 'online'
-          : 'offline'
-        return wallet
-      }))).filter(w => w !== null)
+            wallet.tags = w.tags ?? []
+            wallet.status = connectedWallets
+              .map((w) => w.address.toLowerCase())
+              .includes(w.address.toLowerCase())
+              ? 'online'
+              : 'offline'
+            return wallet
+          })
+        )
+      ).filter((w) => w !== null)
     },
 
     async sendWalletsToPage(useChecked: boolean = false) {
@@ -212,7 +216,10 @@ export const useWalletsStore = defineStore('wallets', {
         )
       }
 
-      await set('connectedWallets', Array.from(this.wallets.filter((w) => w.status === 'online').map(w => w.format())))
+      await set(
+        'connectedWallets',
+        Array.from(this.wallets.filter((w) => w.status === 'online').map((w) => w.format()))
+      )
 
       await this.sendMessage(
         'eth_requestAccounts',
@@ -234,25 +241,26 @@ export const useWalletsStore = defineStore('wallets', {
 
       const newWallets = wallets.map((w) => {
         const wallet = new FuelWallet(w.privateKey)
-        wallet.address = wallet.address.slice(0, 2) !== '0x' ? `0x${wallet.address}` : wallet.address;
+        wallet.address =
+          wallet.address.slice(0, 2) !== '0x' ? `0x${wallet.address}` : wallet.address
         wallet.tags = [
           {
             id: 1,
             name: `${w.address.slice(0, 6)}...${w.address.slice(-4)}`,
             color: 'green' as TypeTagColor
           }
-        ];
+        ]
         return {
           privateKey: w.privateKey,
           address: wallet.address,
           tags: wallet.tags,
           type: wallet.type
-        };
+        }
       })
       return newWallets
     },
 
-    async generateWallets(counts: { type: WalletType, count: number }[]): Promise<IStoredWallet[]> {
+    async generateWallets(counts: { type: WalletType; count: number }[]): Promise<IStoredWallet[]> {
       const newWallets: IWallet[] = []
       counts.forEach(async ({ count, type }) => {
         switch (type) {
@@ -266,23 +274,26 @@ export const useWalletsStore = defineStore('wallets', {
             newWallets.push(...Array.from({ length: count }).map(() => new SolanaWallet()))
             break
         }
-      });
+      })
 
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10))
 
-      return await Promise.all(newWallets.map(async (w) => {
-        return {
-          privateKey: await w.getPrivateKey(),
-          address: w.address,
-          tags: w.tags,
-          type: w.type
-        };
-      }))
+      return await Promise.all(
+        newWallets.map(async (w) => {
+          return {
+            privateKey: await w.getPrivateKey(),
+            address: w.address,
+            tags: w.tags,
+            type: w.type
+          }
+        })
+      )
     },
 
     async exportToCSV(wallets: IWallet[]) {
-      const csvLines = await Promise.all(wallets
-        .map(async (w) => `${w.address},${await w.getPrivateKey()}\n`))
+      const csvLines = await Promise.all(
+        wallets.map(async (w) => `${w.address},${await w.getPrivateKey()}\n`)
+      )
 
       const valueBlob = new Blob(['Address,PrivateKey\n', ...csvLines], {
         type: 'text/csv;encoding:utf-8'
