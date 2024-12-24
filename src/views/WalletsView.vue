@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import TheScreen from '@/components/TheScreen.vue'
+import TheWallets from '@/components/TheWallets.vue'
 </script>
 
 <template>
   <main>
-    <TheScreen />
+    <TheWallets />
   </main>
 </template>

@@ -5,9 +5,9 @@ import type { IAuthStore } from '@/types/auth'
 export const useAuthStore = defineStore('auth', {
   state: (): IAuthStore => ({
     isRegistered: false,
-    isLocked: true,
+    isLocked: null,
     isExternalRequest: false,
-    projectVersion: "1.0.4"
+    projectVersion: '1.0.4'
   }),
   actions: {
     setIsRegistered(value: boolean) {
@@ -40,9 +40,9 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async updateIsLocked(locked: boolean) {
-      this.isLocked = locked;
+      this.isLocked = locked
       const { set } = useStorageStore()
-      await set('isLocked', locked);
+      await set('isLocked', locked)
     },
 
     async checkIsLocked() {

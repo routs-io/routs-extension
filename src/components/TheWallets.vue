@@ -25,7 +25,9 @@ const total = computed<string>(() => {
 })
 
 const isSomeWalletOffline = computed<boolean>(() => {
-  return wallets.value.filter(w => Wallet.AVAILABLE_SIGNER_TYPES.includes(w.type)).some((el) => el.status === 'offline')
+  return wallets.value
+    .filter((w) => Wallet.AVAILABLE_SIGNER_TYPES.includes(w.type))
+    .some((el) => el.status === 'offline')
 })
 
 const buttonConnectName = computed<string>(() => {

@@ -1,6 +1,6 @@
 export interface IAuthStore {
   isRegistered: boolean
-  isLocked: boolean
+  isLocked: boolean | null
   isExternalRequest: boolean
   projectVersion: string
 }

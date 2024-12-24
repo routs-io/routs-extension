@@ -1,0 +1,16 @@
+.screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 100%;
+  padding: 1.5rem 1.25rem 1.25rem;
+
+  &__img {
+    width: 35%;
+
+    img {
+      object-fit: contain;
+    }
+  }
+}
