@@ -8,7 +8,6 @@ import type {
 } from '@/types/sign'
 import { defineStore } from 'pinia'
 import { useWalletsStore } from '@/stores/wallets'
-
 export const useSignStore = defineStore('sign', {
     state: (): ISignStore => ({
         requestId: 0,
@@ -22,7 +21,7 @@ export const useSignStore = defineStore('sign', {
         },
 
         async signEvmTransaction(transaction: IEvmTransaction, wallet: string): Promise<string> {
-            
+
             const { from, to, data } = transaction
 
             if (!from || !to || !data) throw new Error('Invalid transaction data')
@@ -30,7 +29,7 @@ export const useSignStore = defineStore('sign', {
             const { getWalletByAddress } = useWalletsStore()
 
             const signer = getWalletByAddress(wallet)
-            if(!signer) throw new Error('Wallet not found')
+            if (!signer) throw new Error('Wallet not found')
             const signedTransaction = await signer.signTransaction(transaction)
             return signedTransaction
         },
@@ -39,7 +38,7 @@ export const useSignStore = defineStore('sign', {
             const { getWalletByAddress } = useWalletsStore()
 
             const signer = getWalletByAddress(wallet)
-            if(!signer) throw new Error('Wallet not found')
+            if (!signer) throw new Error('Wallet not found');
             const signedTransaction = await signer.signTransaction(transaction);
             console.log('in signSolTransaction', signedTransaction);
             return signedTransaction
@@ -103,10 +102,10 @@ export const useSignStore = defineStore('sign', {
             this.path = await Promise.all(this.path.map(async (step) => {
                 if (typeof step.transaction.signedHash !== 'undefined') return step;
                 let signedHash: string | null = null;
-                if(step.transaction.platform === 'evm') {
+                if (step.transaction.platform === 'evm') {
                     signedHash = await this.signEvmTransaction(step.transaction as IEvmTransaction, step.address)
                 }
-                else if(step.transaction.platform === 'sol') {
+                else if (step.transaction.platform === 'sol') {
                     signedHash = await this.signSolTransaction(step.transaction as ISolTransaction, step.address)
                 }
                 step.transaction.signedHash = signedHash
@@ -130,6 +129,7 @@ export const useSignStore = defineStore('sign', {
                 data: this.formatPathToIncoming(this.path),
                 direction: 'out'
             })
-        }
+        },
+
     }
 })

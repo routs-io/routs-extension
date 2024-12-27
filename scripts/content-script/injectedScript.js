@@ -51,12 +51,12 @@
 
   window.addEventListener('message', (event) => {
     if (event.source !== window || event.data.source !== 'routs-extension') {
-        return;
+      return;
     }
 
     // Emit the event to the RoutsAPI eventEmitter
     RoutsAPI._emit(event.data.event, event.data.data);
-});
+  });
 
   window.routs = RoutsAPI;
 })();

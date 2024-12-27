@@ -55,6 +55,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       })
       sendResponse({ status: 'success' })
       break
+    case 'ws_setupTask':
+      sendResponse({ status: 'success' })
+      break
     default:
       sendResponse({ status: 'fail', message: 'Invalid method' })
   }

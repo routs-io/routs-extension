@@ -28,8 +28,8 @@
   },
   "include": [
     "env.d.ts",
-    //"src/**/*",
-    //"src/**/*.vue",
+    "src/**/*",
+    "src/**/*.vue",
     "scripts/background/*",
     "scripts/content-script/*",
     "scripts/utils/*",
@@ -37,7 +37,7 @@
     "vitest.config.*",
     "cypress.config.*",
     "nightwatch.conf.*",
-    "playwright.config.*"
+    "playwright.config.*" 
   ],
   "exclude": ["node_modules", "src/**/__tests__/*"]
 }

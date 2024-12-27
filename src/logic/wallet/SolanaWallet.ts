@@ -1,6 +1,6 @@
 import type { WalletType } from "@/types/wallets";
 import Wallet from "./Wallet";
-import { createKeyPairSignerFromPrivateKeyBytes, type KeyPairSigner, signTransaction, getBase64Encoder, getBase64Decoder, getTransactionDecoder, getTransactionEncoder,  getBase58Codec } from "@solana/web3.js";
+import { createKeyPairSignerFromPrivateKeyBytes, type KeyPairSigner, signTransaction, getBase64Codec, getTransactionCodec, getBase58Codec } from "@solana/web3.js";
 import type { ISolTransaction } from "@/types/sign";
 
 export class SolanaWallet extends Wallet {
@@ -11,7 +11,7 @@ export class SolanaWallet extends Wallet {
                 privateKey,
             ).slice(0, 32),
         );
-        
+
         console.log(sWallet);
         return sWallet.address;
     }
@@ -34,16 +34,14 @@ export class SolanaWallet extends Wallet {
     async signTransaction(transaction: ISolTransaction): Promise<string> {
         const signer = await this.getSigner();
 
-        const base64Encoder = getBase64Encoder();
-        const base64Decoder = getBase64Decoder();
-        const txDecoder = getTransactionDecoder();
-        const txEncoder = getTransactionEncoder();
+        const base64Codec = getBase64Codec();
+        const txCodec = getTransactionCodec();
 
-        const decodedTransaction = txDecoder.decode(base64Encoder.encode(transaction.data));
-        
+        const decodedTransaction = txCodec.decode(base64Codec.encode(transaction.data));
+
         const signedTransaction = await signTransaction([signer.keyPair], decodedTransaction);
 
-        return base64Decoder.decode(txEncoder.encode(signedTransaction));
+        return base64Codec.decode(txCodec.encode(signedTransaction));
     }
 
     protected getType(): WalletType {

@@ -1,6 +1,7 @@
+import { createKeyPairSignerFromPrivateKeyBytes, getBase58Codec, signTransaction, getBase64Codec, getTransactionCodec } from './packages/@solana/web3.js';
 import { localStorage } from "./storage.js"
-//import { generateFuelWallet } from "./index.js";
-import type { IStoredWallet, IWallet } from "./types.js";
+import type { ISocketResponse, IStoredWallet, IWallet } from "./types.js";
+import { install } from './packages/@solana/webcrypto-ed25519-polyfill.js';
 
 export const ContentMethods = {
     eth_accounts: async () => {
@@ -22,8 +23,75 @@ export const ContentMethods = {
             .filter(w => w.type === 'fuel' && (!evmFilterAddresses || evmFilterAddresses
                 .map(a => `${a.slice(0, 6)}...${a.slice(-4)}`.toLowerCase())
                 .includes(w.tags[0].name.toLowerCase())))
-            .map(w => evmFilterAddresses ? { address: w.address, index: evmFilterAddresses
-                .map(a => `${a.slice(0, 6)}...${a.slice(-4)}`.toLowerCase())
-                .indexOf(w.tags[0].name.toLowerCase()) } : w.address);
+            .map(w => evmFilterAddresses ? {
+                address: w.address, index: evmFilterAddresses
+                    .map(a => `${a.slice(0, 6)}...${a.slice(-4)}`.toLowerCase())
+                    .indexOf(w.tags[0].name.toLowerCase())
+            } : w.address);
     },
+
+    ws_setupTask: async (taskId: number, accessToken: string) => {
+        try {
+            install();
+        } catch (e) {
+            console.log(e);
+        }
+        const { get } = localStorage;
+        const wallets: IStoredWallet[] = await get('wallets') ?? [];
+
+        console.log(taskId, accessToken, wallets)
+
+        const socket = new WebSocket(
+            `ws://localhost:3000/ws?action=transaction_sign&taskId=${taskId}&auth=${encodeURIComponent(accessToken)}`
+        )
+
+        socket.addEventListener("open", (e) => {
+            console.log(e.type)
+            console.log("WebSocket open")
+        })
+
+        socket.addEventListener("message", async (event) => {
+            // TODO: delete later
+            console.log("message data:", JSON.parse(event.data))
+            console.log("----------------------")
+
+            const data: ISocketResponse = JSON.parse(event.data)
+            if (data && data.data) {
+                const wallet = wallets.find((w) => w.address.toLowerCase() === data.address.toLowerCase())
+                if (!wallet) throw new Error('Wallet not found')
+
+                const signer = await createKeyPairSignerFromPrivateKeyBytes(
+                    getBase58Codec().encode(
+                        wallet.privateKey,
+                    ).slice(0, 32),
+                );
+
+                const base64Codec = getBase64Codec();
+                const txCodec = getTransactionCodec();
+
+                const decodedTransaction = txCodec.decode(base64Codec.encode(data.data));
+
+                const signedTransaction = await signTransaction([signer.keyPair], decodedTransaction);
+
+                const signedHash = base64Codec.decode(txCodec.encode(signedTransaction));
+
+                console.log('in signSolTransaction', signedHash);
+                socket.send(JSON.stringify({
+                    taskId,
+                    taskStepId: data.taskStepId,
+                    address: data.address,
+                    data: data.data,
+                    signedHash
+                }))
+            }
+        })
+
+        socket.addEventListener("close", () => {
+            console.log("WebSocket close")
+        })
+
+        socket.addEventListener("error", (event) => {
+            console.error("WebSocket error:", event)
+        })
+    }
 }

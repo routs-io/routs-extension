@@ -1,3 +1,21 @@
+export interface MessageRequest {
+    id: number,
+    method: string,
+    params: any[]
+};
+
+export interface SendMessageResponse {
+    status: "success" | "fail",
+    message?: string
+}
+
+export interface ISocketResponse {
+    address: string,
+    taskId: number,
+    taskStepId: number,
+    data: string,
+}
+
 export interface IWallet {
     address: string
     tags: ITag[]

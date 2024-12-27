@@ -1,18 +1,6 @@
 import { ContentMethods } from "../utils/content.js";
-
-const POPUP_WIDTH = 378;
-const POPUP_HEIGHT = 639;
-
-declare type MessageRequest = {
-    id: number,
-    method: string,
-    params: any[]
-};
-
-declare type SendMessageResponse = {
-    status: "success" | "fail",
-    message?: string
-}
+import { POPUP_WIDTH, POPUP_HEIGHT, SUPPORTED_POPUP_METHODS, SUPPORTED_CONTENT_METHODS, SUPPORTED_EVENTS } from "../utils/constants.js";
+import type { SendMessageResponse, MessageRequest } from "../utils/types.js";
 
 const requests = new Map<number, {
     request: any,
@@ -20,22 +8,6 @@ const requests = new Map<number, {
 }>();
 
 let popup: chrome.windows.Window;
-
-const SUPPORTED_POPUP_METHODS = [
-    "navigate",
-    "eth_requestAccounts",
-    "eth_signTransactions",
-    "fuel_generateAccounts"
-]
-
-const SUPPORTED_CONTENT_METHODS = [
-    "eth_accounts",
-    "fuel_accounts"
-]
-
-const SUPPORTED_EVENTS = [
-    "accountsChanged",
-]
 
 function generateId() {
     return Math.floor(Math.random() * 1000000);
@@ -64,7 +36,7 @@ async function openPopup(): Promise<SendMessageResponse> {
         width: POPUP_WIDTH,
         height: POPUP_HEIGHT,
         top,
-        left
+        left,
     });
 
     if (popup) {
@@ -91,7 +63,7 @@ async function handlePopupMethod(message: MessageRequest): Promise<SendMessageRe
 
 async function handleContentMethod(message: MessageRequest): Promise<any> {
     if (message.method in ContentMethods) {
-        return await ContentMethods[message.method as keyof typeof ContentMethods](message.params);
+        return await ContentMethods[message.method as keyof typeof ContentMethods](message.params[0], message.params[1]);
     } else {
         throw new Error(`Method ${message.method} not supported`);
     }

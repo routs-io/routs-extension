@@ -1,8 +1,8 @@
 {
   "name": "Routs Extension",
   "description": "Routs Extension",
-  "version": "1.0.4",
-  "version_name": "1.0.4",
+  "version": "1.1.0",
+  "version_name": "1.1.0",
   "manifest_version": 3,
   "action": {
     "default_popup": "index.html"
@@ -14,7 +14,9 @@
   "content_scripts": [
     {
       "all_frames": true,
-      "js": ["./scripts/content-script/index.js"],
+      "js": [
+        "./scripts/content-script/index.js"
+      ],
       "matches": [
         "http://localhost:3620/*",
         "https://app.routs.io/*"
