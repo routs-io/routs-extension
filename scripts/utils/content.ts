@@ -2,6 +2,7 @@ import { createKeyPairSignerFromPrivateKeyBytes, getBase58Codec, signTransaction
 import { localStorage } from "./storage.js"
 import type { ISocketResponse, IStoredWallet, IWallet } from "./types.js";
 import { install } from './packages/@solana/webcrypto-ed25519-polyfill.js';
+import { SOCKET_URL } from './constants.js';
 
 export const ContentMethods = {
     eth_accounts: async () => {
@@ -42,13 +43,20 @@ export const ContentMethods = {
         console.log(taskId, accessToken, wallets)
 
         const socket = new WebSocket(
-            `ws://localhost:3000/ws?action=transaction_sign&taskId=${taskId}&auth=${encodeURIComponent(accessToken)}`
+            `${SOCKET_URL}/ws?action=transaction_sign&taskId=${taskId}&auth=${encodeURIComponent(accessToken)}`
         )
 
         socket.addEventListener("open", (e) => {
             console.log(e.type)
             console.log("WebSocket open")
         })
+
+        setInterval(() => {
+            socket.send(JSON.stringify({
+                taskId,
+                ping: true
+            }))
+        }, 5000)
 
         socket.addEventListener("message", async (event) => {
             // TODO: delete later
