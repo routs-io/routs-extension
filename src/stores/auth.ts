@@ -23,12 +23,14 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async checkPassword(password: string): Promise<boolean> {
-      if (!this.isRegistered) {
+      console.log(this.isRegistered)
+      if (!this.checkIsRegistered()) {
         return false
       }
       const { get } = useStorageStore()
       const response = await get('password')
       await this.updateIsLocked(password !== response)
+      console.log(password, response)
       return password === response
     },
 

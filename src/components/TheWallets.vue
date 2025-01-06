@@ -16,7 +16,7 @@ import { useWalletsStore } from '@/stores/wallets'
 import Wallet from '@/logic/wallet/Wallet'
 
 const { wallets } = toRefs(useWalletsStore())
-const { refreshWallets, connectAll, disconnectAll, exportToCSV } = useWalletsStore()
+const { refreshWallets, connectAll, disconnectAll, exportToCSV, deleteWallets } = useWalletsStore()
 
 // Computed
 const total = computed<string>(() => {
@@ -81,8 +81,8 @@ async function exportWallets() {
 }
 
 // Delete
-function onDelete() {
-  console.log('onDelete')
+async function onDelete() {
+  await deleteWallets(checkedWallets.value)
 }
 
 onMounted(async () => await refreshWallets(0))

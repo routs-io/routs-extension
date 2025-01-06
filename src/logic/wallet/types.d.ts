@@ -1,3 +1,9 @@
+export interface ITag {
+    id: number
+    name: string
+    color: TypeTagColor
+}
+
 export interface IWallet {
     address: string;
     tags: ITag[];

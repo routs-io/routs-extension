@@ -11,7 +11,9 @@ const { sendWalletsToPage, refreshWallets } = useWalletsStore()
 
 // Computed
 const disconnectedWallets = computed<Wallet[]>(() => {
-  return wallets.value.filter((wallet) => wallet.status === 'offline' && Wallet.AVAILABLE_SIGNER_TYPES.includes(wallet.type)) as Wallet[]
+  return wallets.value.filter(
+    (wallet) => wallet.status === 'offline' && Wallet.AVAILABLE_SIGNER_TYPES.includes(wallet.type)
+  ) as Wallet[]
 })
 
 const isSomeChecked = computed<boolean>(() => {
@@ -34,8 +36,8 @@ async function connect() {
 }
 
 // Close
-function closeWindow() {
-  // Close window logic
+async function closeWindow() {
+  await sendWalletsToPage(false)
 }
 
 onMounted(async () => {
@@ -53,6 +55,14 @@ onMounted(async () => {
     <div class="wallets">
       <div class="wallets__list" v-if="disconnectedWallets.length">
         <WalletsItem v-for="(wallet, i) in disconnectedWallets" :key="i" class="wallet" :wallet />
+      </div>
+
+      <div v-else-if="!wallets.length" class="plug">
+        <img class="plug__img" src="@/assets/img/wallet.svg" alt="wallet" />
+        <h2 class="plug__title">No wallets</h2>
+        <p class="plug__text">You haven’t add any wallets yet.</p>
+
+        <RouterLink class="button button--blue button--md" to="/import">Add</RouterLink>
       </div>
 
       <div v-else class="plug">

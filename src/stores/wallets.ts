@@ -47,7 +47,7 @@ export const useWalletsStore = defineStore('wallets', {
     },
 
     detectPrivateKeyType(privateKey: string): WalletType {
-      if (/^[0-9a-fA-F]{64}$/.test(privateKey)) return 'evm'
+      if (/^(0x)?[0-9a-fA-F]{64}$/.test(privateKey)) return 'evm'
       else if (/^[0-9a-zA-Z]{88}$/.test(privateKey)) return 'sol'
       else return 'unknown'
     },
@@ -101,8 +101,8 @@ export const useWalletsStore = defineStore('wallets', {
           wallets.find((w) => w.address.toLowerCase() === address)?.address,
         tags: Array.from(
           walletsInStorage.find((w) => w.address.toLowerCase() === address)?.tags ??
-            wallets.find((w) => w.address.toLowerCase() === address)?.tags ??
-            []
+          wallets.find((w) => w.address.toLowerCase() === address)?.tags ??
+          []
         ),
         type: this.detectAddressType(address)
       }))
@@ -115,6 +115,17 @@ export const useWalletsStore = defineStore('wallets', {
         )
         this.requestId = 0
       }
+      await this.refreshWallets(0)
+    },
+
+    async deleteWallets(wallets: IWallet[]) {
+      const { get, set } = useStorageStore()
+
+      const walletsInStorage: IStoredWallet[] = Array.from((await get('wallets')) ?? [])
+
+      const newWallets = walletsInStorage.filter(w => !wallets.map(ww => ww.address.toLowerCase()).includes(w.address.toLowerCase()))
+
+      await set('wallets', newWallets);
       await this.refreshWallets(0)
     },
 
