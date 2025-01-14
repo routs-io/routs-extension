@@ -24,7 +24,7 @@ function updateExtension() {
 }
 
 async function updateLock() {
-  await updateIsLocked(!isLocked.value);
+  await updateIsLocked(!isLocked.value)
 }
 </script>
 
@@ -66,6 +66,6 @@ async function updateLock() {
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/scss/main/settings.scss';
-@import '@/assets/scss/main/section.scss';
+@use '@/assets/scss/main/settings.scss';
+@use '@/assets/scss/main/section.scss';
 </style>

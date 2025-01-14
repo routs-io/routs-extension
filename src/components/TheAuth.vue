@@ -102,6 +102,6 @@ onBeforeMount(async () => await checkIsRegistered())
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/scss/main/validation.scss';
-@import '@/assets/scss/main/auth.scss';
+@use '@/assets/scss/main/validation.scss';
+@use '@/assets/scss/main/auth.scss';
 </style>

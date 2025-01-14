@@ -34,5 +34,5 @@ const checked = defineModel<boolean>()
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/scss/app/checkbox.scss';
+@use '@/assets/scss/app/checkbox.scss';
 </style>

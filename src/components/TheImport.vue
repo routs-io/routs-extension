@@ -130,6 +130,6 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/scss/main/import.scss';
-@import '@/assets/scss/main/section.scss';
+@use '@/assets/scss/main/import.scss';
+@use '@/assets/scss/main/section.scss';
 </style>

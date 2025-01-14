@@ -9,7 +9,8 @@ import IconArrowShort from '@/components/icons/IconArrowShort.vue'
 import { useSignStore } from '@/stores/sign'
 import type { IEvmTransaction, ISolTransaction } from '@/types/sign'
 
-const { signEvmTransaction, signSolTransaction, signAll, rejectAll, sendTransactionsToPage } = useSignStore()
+const { signEvmTransaction, signSolTransaction, signAll, rejectAll, sendTransactionsToPage } =
+  useSignStore()
 const { path } = toRefs(useSignStore())
 
 const currentIndex = ref<number>(0)
@@ -50,12 +51,17 @@ const isAllSigned = computed<boolean>(() => {
 })
 
 async function signTxn() {
-  if(path.value[currentIndex.value].transaction.platform === 'evm') {
-    const signedHash = await signEvmTransaction(path.value[currentIndex.value].transaction as IEvmTransaction, path.value[currentIndex.value].address)
+  if (path.value[currentIndex.value].transaction.platform === 'evm') {
+    const signedHash = await signEvmTransaction(
+      path.value[currentIndex.value].transaction as IEvmTransaction,
+      path.value[currentIndex.value].address
+    )
     path.value[currentIndex.value].transaction.signedHash = signedHash
-  }
-  else if(path.value[currentIndex.value].transaction.platform === 'sol') {
-    const signedHash = await signSolTransaction(path.value[currentIndex.value].transaction as ISolTransaction, path.value[currentIndex.value].address)
+  } else if (path.value[currentIndex.value].transaction.platform === 'sol') {
+    const signedHash = await signSolTransaction(
+      path.value[currentIndex.value].transaction as ISolTransaction,
+      path.value[currentIndex.value].address
+    )
     path.value[currentIndex.value].transaction.signedHash = signedHash
   }
 
@@ -121,6 +127,6 @@ async function rejectTxn() {
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/scss/main/sign.scss';
-@import '@/assets/scss/main/section.scss';
+@use '@/assets/scss/main/sign.scss';
+@use '@/assets/scss/main/section.scss';
 </style>

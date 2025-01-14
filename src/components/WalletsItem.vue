@@ -57,6 +57,6 @@ async function handleWalletConnection() {
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/scss/app/tag.scss';
-@import '@/assets/scss/main/wallet.scss';
+@use '@/assets/scss/app/tag.scss';
+@use '@/assets/scss/main/wallet.scss';
 </style>

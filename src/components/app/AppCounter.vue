@@ -96,5 +96,5 @@ function onBlur() {
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/scss/app/counter.scss';
+@use '@/assets/scss/app/counter.scss';
 </style>

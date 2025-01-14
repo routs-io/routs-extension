@@ -38,5 +38,5 @@ onBeforeMount(async () => {
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/scss/app/container.scss';
+@use '@/assets/scss/app/container.scss';
 </style>

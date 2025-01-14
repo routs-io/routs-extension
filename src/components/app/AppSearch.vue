@@ -55,5 +55,5 @@ function onInput(e: Event) {
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/scss/app/search.scss';
+@use '@/assets/scss/app/search.scss';
 </style>

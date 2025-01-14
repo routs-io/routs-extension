@@ -51,7 +51,7 @@ const nav: INav[] = [
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/scss/app/nav.scss';
+@use '@/assets/scss/app/nav.scss';
 </style>
 
 <style lang="scss" scoped>

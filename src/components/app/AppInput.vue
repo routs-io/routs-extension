@@ -43,5 +43,5 @@ const model = defineModel<string>()
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/scss/app/input.scss';
+@use '@/assets/scss/app/input.scss';
 </style>

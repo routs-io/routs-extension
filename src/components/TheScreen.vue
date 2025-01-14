@@ -9,5 +9,5 @@
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/scss/main/screen.scss';
+@use '@/assets/scss/main/screen.scss';
 </style>

@@ -9,7 +9,7 @@ import { useAuthStore } from '@/stores/auth'
 const { checkPassword } = useAuthStore()
 
 const emit = defineEmits<{
-  'on-close': [void],
+  'on-close': [void]
   'on-success': [void]
 }>()
 
@@ -62,5 +62,5 @@ function closeModal() {
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/scss/app/modal.scss';
+@use '@/assets/scss/app/modal.scss';
 </style>

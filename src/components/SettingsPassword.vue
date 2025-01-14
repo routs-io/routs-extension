@@ -121,6 +121,6 @@ function resetPasswords() {
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/scss/main/validation.scss';
-@import '@/assets/scss/main/password.scss';
+@use '@/assets/scss/main/validation.scss';
+@use '@/assets/scss/main/password.scss';
 </style>

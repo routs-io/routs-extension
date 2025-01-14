@@ -14,7 +14,7 @@ const props = defineProps<{
   txn: IPathStep
 }>()
 
-console.log(props.txn);
+console.log(props.txn)
 
 const formattedAllowance = computed(() => {
   const K = 1000n
@@ -50,7 +50,7 @@ const transactionTextLeft = computed(() => {
     case 'deposit':
       return `Deposit ${formattedAmountIn.value}`
     default:
-      if(props.txn.service === 'fuelmigration') return `Deposit ${formattedAmountIn.value}` 
+      if (props.txn.service === 'fuelmigration') return `Deposit ${formattedAmountIn.value}`
       return 'unknown'
   }
 })
@@ -73,13 +73,16 @@ const transactionTextRight = computed(() => {
     case 'deposit':
       return null
     default:
-      if(props.txn.service === 'fuelmigration') return null
+      if (props.txn.service === 'fuelmigration') return null
       return null
   }
 })
 
 const service = computed(() => {
-  return (props.txn.service.slice(0, 1).toUpperCase() + props.txn.service.slice(1)).replace('_', ' ')
+  return (props.txn.service.slice(0, 1).toUpperCase() + props.txn.service.slice(1)).replace(
+    '_',
+    ' '
+  )
 })
 
 const network = computed(() => {
@@ -102,17 +105,16 @@ const network = computed(() => {
 
     <div class="txn__box">
       <p class="txn__operation">
-        {{ transactionTextLeft }} <IconArrowLong v-if="transactionTextRight" /> {{ transactionTextRight ?? '' }}
+        {{ transactionTextLeft }} <IconArrowLong v-if="transactionTextRight" />
+        {{ transactionTextRight ?? '' }}
       </p>
 
-      <p class="txn__services">
-        {{ service }} on {{ network }}
-      </p>
+      <p class="txn__services">{{ service }} on {{ network }}</p>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/scss/app/tag.scss';
-@import '@/assets/scss/main/txn.scss';
+@use '@/assets/scss/app/tag.scss';
+@use '@/assets/scss/main/txn.scss';
 </style>

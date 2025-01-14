@@ -1,6 +1,6 @@
-@import './general/_fonts.scss';
-@import './general/_global.scss';
-@import './general/_reset.scss';
-@import './general/_variables.scss';
+@use 'general/_fonts';
+@use 'general/_global';
+@use 'general/_reset';
+@use 'general/_variables';
 
-@import './app/button.scss';
+@use 'app/button';
