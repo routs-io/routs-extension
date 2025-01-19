@@ -19,7 +19,8 @@
       ],
       "matches": [
         "http://localhost:3620/*",
-        "https://app.routs.io/*"
+        "https://app.routs.io/*",
+        "https://dankov.co.uk/*"
       ],
       "run_at": "document_end"
     }
@@ -36,14 +37,16 @@
       ],
       "matches": [
         "http://localhost:3620/*",
-        "https://app.routs.io/*"
+        "https://app.routs.io/*",
+        "https://dankov.co.uk/*"
       ]
     }
   ],
   "externally_connectable": {
     "matches": [
       "http://localhost:3620/*",
-      "https://app.routs.io/*"
+      "https://app.routs.io/*",
+      "https://dankov.co.uk/*"
     ]
   },
   "icons": {
