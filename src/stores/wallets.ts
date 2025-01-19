@@ -48,7 +48,7 @@ export const useWalletsStore = defineStore('wallets', {
 
     detectPrivateKeyType(privateKey: string): WalletType {
       if (/^(0x)?[0-9a-fA-F]{64}$/.test(privateKey)) return 'evm'
-      else if (/^[0-9a-zA-Z]{88}$/.test(privateKey)) return 'sol'
+      else if (/^[0-9a-zA-Z]{87,88}$/.test(privateKey)) return 'sol'
       else return 'unknown'
     },
 
