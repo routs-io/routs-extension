@@ -17,7 +17,7 @@ export class SolanaWallet extends Wallet {
     }
 
     protected generatePrivateKey(): string {
-        const bytes = new Uint8Array(8);
+        const bytes = new Uint8Array(32);
 
         return getBase58Codec().decode(window.crypto.getRandomValues(bytes));
     }
