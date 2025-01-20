@@ -107,7 +107,7 @@ onMounted(async () => await refreshWallets(0))
       <h1>Wallets</h1>
 
       <div class="section__buttons">
-        <RouterLink v-if="wallets.length" class="btn-icon" to="/generate">
+        <RouterLink class="btn-icon" to="/generate">
           <IconFlash />
         </RouterLink>
 

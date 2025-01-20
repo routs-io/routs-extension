@@ -15,8 +15,8 @@ export const useWalletsStore = defineStore('wallets', {
   }),
 
   actions: {
-    shortenAddress(address: string): string {
-      // Example: 0x123456...123456
+    shortenAddress(address?: string | null): string {
+      if (!address) return 'Unknown wallet address'
       return `${address.substring(0, 8)}...${address.substring(address.length - 6)}`
     },
 
@@ -101,8 +101,8 @@ export const useWalletsStore = defineStore('wallets', {
           wallets.find((w) => w.address.toLowerCase() === address)?.address,
         tags: Array.from(
           walletsInStorage.find((w) => w.address.toLowerCase() === address)?.tags ??
-          wallets.find((w) => w.address.toLowerCase() === address)?.tags ??
-          []
+            wallets.find((w) => w.address.toLowerCase() === address)?.tags ??
+            []
         ),
         type: this.detectAddressType(address)
       }))
@@ -123,9 +123,11 @@ export const useWalletsStore = defineStore('wallets', {
 
       const walletsInStorage: IStoredWallet[] = Array.from((await get('wallets')) ?? [])
 
-      const newWallets = walletsInStorage.filter(w => !wallets.map(ww => ww.address.toLowerCase()).includes(w.address.toLowerCase()))
+      const newWallets = walletsInStorage.filter(
+        (w) => !wallets.map((ww) => ww.address.toLowerCase()).includes(w.address.toLowerCase())
+      )
 
-      await set('wallets', newWallets);
+      await set('wallets', newWallets)
       await this.refreshWallets(0)
     },
 

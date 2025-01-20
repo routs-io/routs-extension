@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import type { IWallet } from '@/logic/wallet/types'
 
 import IconEvm from '@/components/icons/IconEvm.vue'
@@ -18,6 +18,18 @@ const buttonName = computed<string>(() => {
   return props.wallet.status === 'online' ? 'Disconnect' : 'Connect'
 })
 
+// Copy address
+const tip = ref<'Copied' | 'Copy'>('Copy')
+
+function copyAddress(address: string) {
+  navigator.clipboard.writeText(address)
+  tip.value = 'Copied'
+
+  setTimeout(() => {
+    tip.value = 'Copy'
+  }, 5000)
+}
+
 async function handleWalletConnection() {
   await handleConnection(props.wallet)
 }
@@ -33,7 +45,10 @@ async function handleWalletConnection() {
         <IconFuel v-else-if="wallet.type === 'fuel'" class="wallet__icon" />
         <IconSolana v-else-if="wallet.type === 'sol'" class="wallet__icon" />
 
-        <p>{{ shortenAddress(wallet.address) }}</p>
+        <p @click="copyAddress(wallet.address)">
+          <span>{{ shortenAddress(wallet.address) }}</span>
+          <span class="wallet__tip">{{ tip }}</span>
+        </p>
       </div>
 
       <div v-if="wallet.tags.length" class="wallet__tags">
