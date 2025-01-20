@@ -3,7 +3,7 @@ import type { IStoredWallet, IWalletsStore, TypeTagColor, WalletType } from '@/t
 
 import { useStorageStore } from '@/stores/storage'
 import { FuelWallet } from '@/logic/wallet/FuelWallet'
-import type { FormattedWallet, IWallet } from '@/logic/wallet/types'
+import type { IWallet } from '@/logic/wallet/types'
 import { EvmWallet } from '@/logic/wallet/EvmWallet'
 import { SolanaWallet } from '@/logic/wallet/SolanaWallet'
 import Wallet from '@/logic/wallet/Wallet'
@@ -101,8 +101,8 @@ export const useWalletsStore = defineStore('wallets', {
           wallets.find((w) => w.address.toLowerCase() === address)?.address,
         tags: Array.from(
           walletsInStorage.find((w) => w.address.toLowerCase() === address)?.tags ??
-            wallets.find((w) => w.address.toLowerCase() === address)?.tags ??
-            []
+          wallets.find((w) => w.address.toLowerCase() === address)?.tags ??
+          []
         ),
         type: this.detectAddressType(address)
       }))
@@ -131,29 +131,19 @@ export const useWalletsStore = defineStore('wallets', {
       await this.refreshWallets(0)
     },
 
-    async handleConnection(wallet: IWallet, status?: boolean) {
-      const { get, set } = useStorageStore()
+    async handleConnections(wallets: IWallet[], status?: boolean, emit: boolean = true) {
+      const { set } = useStorageStore()
 
-      if (typeof status !== 'undefined') {
-        this.wallets[
-          this.wallets.map((w) => w.address.toLowerCase()).indexOf(wallet.address.toLowerCase())
-        ].status = status ? 'online' : 'offline'
-      } else {
-        this.wallets[
-          this.wallets.map((w) => w.address.toLowerCase()).indexOf(wallet.address.toLowerCase())
-        ].status = wallet.status === 'offline' ? 'online' : 'offline'
-      }
+      this.wallets.forEach((w) => {
+        if (wallets.map((w) => w.address.toLowerCase()).includes(w.address.toLowerCase())) {
+          w.status = typeof status !== 'undefined' ? (status ? 'online' : 'offline') : (w.status === 'offline' ? 'online' : 'offline')
+        }
+      })
 
-      const wallets: FormattedWallet[] = (await get('connectedWallets')) ?? []
-      const newWallets = wallets
-        .map((w) => w.address.toLowerCase())
-        .includes(wallet.address.toLowerCase())
-        ? wallets.filter((w) => w.address.toLowerCase() !== wallet.address.toLowerCase())
-        : [...wallets, wallet.format()]
+      const connectedWallets = Array.from(this.wallets.filter(w => w.status === 'online').map((w) => w.format()))
+      await set('connectedWallets', connectedWallets)
 
-      await set('connectedWallets', newWallets)
-
-      await this.sendEvent('accountsChanged', newWallets)
+      if (emit) await this.sendEvent('accountsChanged', connectedWallets)
     },
 
     async connectAll() {
@@ -217,22 +207,9 @@ export const useWalletsStore = defineStore('wallets', {
     },
 
     async sendWalletsToPage(useChecked: boolean = false) {
-      const { set } = useStorageStore()
-
       if (useChecked) {
-        this.wallets = await Promise.all(
-          this.wallets.map(async (wallet) => {
-            if (wallet.status === 'online') return wallet
-            await this.handleConnection(wallet, wallet.checked)
-            return wallet
-          })
-        )
+        await this.handleConnections(this.wallets.filter(w => w.checked), true, false)
       }
-
-      await set(
-        'connectedWallets',
-        Array.from(this.wallets.filter((w) => w.status === 'online').map((w) => w.format()))
-      )
 
       await this.sendMessage(
         'eth_requestAccounts',

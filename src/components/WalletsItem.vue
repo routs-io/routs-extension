@@ -10,7 +10,7 @@ import AppCheckbox from '@/components/app/AppCheckbox.vue'
 import { useWalletsStore } from '@/stores/wallets'
 import Wallet from '@/logic/wallet/Wallet'
 
-const { shortenAddress, handleConnection } = useWalletsStore()
+const { shortenAddress, handleConnections } = useWalletsStore()
 
 const props = defineProps<{ wallet: IWallet }>()
 
@@ -31,7 +31,7 @@ function copyAddress(address: string) {
 }
 
 async function handleWalletConnection() {
-  await handleConnection(props.wallet)
+  await handleConnections([props.wallet])
 }
 </script>
 
