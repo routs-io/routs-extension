@@ -12,9 +12,7 @@ import Wallet from '@/logic/wallet/Wallet'
 
 const { shortenAddress, handleConnection } = useWalletsStore()
 
-const props = defineProps<{
-  wallet: IWallet
-}>()
+const props = defineProps<{ wallet: IWallet }>()
 
 const buttonName = computed<string>(() => {
   return props.wallet.status === 'online' ? 'Disconnect' : 'Connect'

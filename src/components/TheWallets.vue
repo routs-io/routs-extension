@@ -5,6 +5,7 @@ import type { IWallet } from '@/logic/wallet/types'
 
 import WalletsExport from '@/components/WalletsExport.vue'
 import WalletsItem from '@/components/WalletsItem.vue'
+import AppCheckbox from '@/components/app/AppCheckbox.vue'
 import AppSearch from '@/components/app/AppSearch.vue'
 import IconAdd from '@/components/icons/IconAdd.vue'
 import IconFlash from '@/components/icons/IconFlash.vue'
@@ -42,6 +43,18 @@ const buttonExportName = computed<string>(() => {
   const amount = checkedWallets.value.length
   return `Export ${amount} wallet${amount > 1 ? 's' : ''}`
 })
+
+// Check all
+const allWalletsChecked = computed<boolean>(() => {
+  return wallets.value.every(({ checked }) => checked)
+})
+
+function checkAllWallets() {
+  wallets.value = wallets.value.map((wallet) => ({
+    ...wallet,
+    checked: !allWalletsChecked.value
+  }))
+}
 
 // Search
 const isSearch = ref<boolean>(false)
@@ -115,10 +128,16 @@ onMounted(async () => await refreshWallets(0))
 
         <!-- Total -->
         <div class="wallets__head">
+          <AppCheckbox
+            :id="`checkbox-total`"
+            :model-value="allWalletsChecked"
+            @on-change="checkAllWallets"
+          />
+
           <p>{{ total }}</p>
 
           <button
-            class="button button--xs blue"
+            class="button button--xs blue wallets__btn"
             :class="{ red: !isSomeWalletOffline }"
             @click="handleConnections"
           >
