@@ -18,4 +18,5 @@ export const SUPPORTED_CONTENT_METHODS = [
 
 export const SUPPORTED_EVENTS = [
     "accountsChanged",
+    "accountsAdded"
 ]

@@ -116,6 +116,9 @@ export const useWalletsStore = defineStore('wallets', {
         this.requestId = 0
       }
       await this.refreshWallets(0)
+
+      const eventPayload = this.wallets.filter(w => !walletsInStorage.map(ww => ww.address.toLowerCase()).includes(w.address.toLowerCase())).map(w => w.format())
+      if (eventPayload.length) await this.sendEvent('accountsAdded', eventPayload)
     },
 
     async deleteWallets(wallets: IWallet[]) {
@@ -267,6 +270,9 @@ export const useWalletsStore = defineStore('wallets', {
       })
 
       await new Promise((resolve) => setTimeout(resolve, 10))
+
+      //console.log('event sent in generateWallets')
+      //await this.sendEvent('accountsAdded', newWallets.map(w => w.format()))
 
       return await Promise.all(
         newWallets.map(async (w) => {
