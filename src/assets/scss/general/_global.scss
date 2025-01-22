@@ -11,6 +11,8 @@ body {
   font-size: 0.875rem;
   color: var(--label-primary);
 
+  background-color: var(--surface-quaternary);
+
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
@@ -18,7 +20,7 @@ body {
   -moz-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
 
-  background-color: var(--surface-quaternary);
+  font-variant-ligatures: no-contextual;
 }
 
 main {

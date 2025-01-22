@@ -5,6 +5,9 @@ import router from '@/router'
 import type { IStoredWallet } from '@/types/wallets'
 
 import IconX from '@/components/icons/IconX.vue'
+import IconEvm from '@/components/icons/IconEvm.vue'
+import IconSolana from '@/components/icons/IconSolana.vue'
+
 import { useWalletsStore } from '@/stores/wallets'
 
 const {
@@ -93,6 +96,11 @@ onMounted(async () => {
   <section class="section">
     <div class="section__head">
       <h1>Import</h1>
+
+      <div class="section__buttons section__buttons--icons">
+        <IconEvm />
+        <IconSolana />
+      </div>
     </div>
 
     <!-- Parse -->

@@ -5,6 +5,7 @@ import type { IWallet } from '@/logic/wallet/types'
 
 import WalletsExport from '@/components/WalletsExport.vue'
 import WalletsItem from '@/components/WalletsItem.vue'
+import WalletsPlug from '@/components/WalletsPlug.vue'
 import AppCheckbox from '@/components/app/AppCheckbox.vue'
 import AppSearch from '@/components/app/AppSearch.vue'
 import IconAdd from '@/components/icons/IconAdd.vue'
@@ -152,13 +153,7 @@ onMounted(async () => await refreshWallets(0))
       </template>
 
       <!-- Empty -->
-      <div v-else class="plug">
-        <img class="plug__img" src="@/assets/img/wallet.svg" alt="wallet" />
-        <h2 class="plug__title">No wallets</h2>
-        <p class="plug__text">You haven’t add any wallets yet.</p>
-
-        <RouterLink class="button button--blue button--md" to="/import">Add</RouterLink>
-      </div>
+      <WalletsPlug v-else />
     </div>
 
     <div v-if="checkedWallets.length" class="section__bottom">

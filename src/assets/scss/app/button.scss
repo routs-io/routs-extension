@@ -70,6 +70,7 @@
   }
 
   &--outline {
+    color: var(--label-secondary);
     background-color: transparent;
     border: 1px solid var(--border-primary);
 
