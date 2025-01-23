@@ -7,13 +7,22 @@ import { SOCKET_URL } from './constants.js';
 export const ContentMethods = {
     eth_accounts: async () => {
         const { get } = localStorage;
-        const connectedWallets: IWallet[] = await get('connectedWallets') ?? [];
+        const wallets: IWallet[] = await get('wallets') ?? [];
 
-        return connectedWallets.map(w => ({
+        return wallets.map(w => ({
             address: w.address,
             type: w.type,
             tags: w.tags
         }));
+    },
+
+    delete_accounts: async (addresses: string[]) => {
+        const { get, set } = localStorage;
+        const wallets: IWallet[] = await get('wallets') ?? [];
+
+        const newWallets = wallets.filter(w => !addresses.map(a => a.toLowerCase()).includes(w.address.toLowerCase()))
+
+        await set('wallets', newWallets)
     },
 
     fuel_accounts: async (evmFilterAddresses?: string[]) => {

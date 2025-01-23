@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import type { IWallet } from '@/logic/wallet/types'
+import { ref } from 'vue'
 
 import IconEvm from '@/components/icons/IconEvm.vue'
 import IconFuel from '@/components/icons/IconFuel.vue'
@@ -8,15 +7,10 @@ import IconSolana from '@/components/icons/IconSolana.vue'
 import AppCheckbox from '@/components/app/AppCheckbox.vue'
 
 import { useWalletsStore } from '@/stores/wallets'
-import Wallet from '@/logic/wallet/Wallet'
 
-const { shortenAddress, handleConnections } = useWalletsStore()
+const { shortenAddress } = useWalletsStore()
 
-const props = defineProps<{ wallet: IWallet }>()
-
-const buttonName = computed<string>(() => {
-  return props.wallet.status === 'online' ? 'Disconnect' : 'Connect'
-})
+defineProps<{ wallet: IWallet }>()
 
 // Copy address
 const tip = ref<'Copied' | 'Copy'>('Copy')
@@ -28,10 +22,6 @@ function copyAddress(address: string) {
   setTimeout(() => {
     tip.value = 'Copy'
   }, 5000)
-}
-
-async function handleWalletConnection() {
-  await handleConnections([props.wallet])
 }
 </script>
 
@@ -57,15 +47,6 @@ async function handleWalletConnection() {
         </div>
       </div>
     </div>
-
-    <button
-      v-if="Wallet.AVAILABLE_SIGNER_TYPES.includes(wallet.type)"
-      class="button wallet__btn"
-      :class="{ 'button--red': wallet.status === 'online' }"
-      @click="handleWalletConnection"
-    >
-      {{ buttonName }}
-    </button>
   </div>
 </template>
 

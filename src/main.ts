@@ -39,10 +39,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       router.push({ name: request.params[0] })
       sendResponse({ status: 'success' })
       break
-    case 'eth_requestAccounts':
-      router.push({ name: 'connect', query: { id: request.id } })
-      sendResponse({ status: 'success' })
-      break
     case 'eth_signTransactions':
       setTransactions(request.id, request.params)
       router.push({ name: 'sign' })

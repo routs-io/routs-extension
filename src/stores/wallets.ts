@@ -6,7 +6,6 @@ import { FuelWallet } from '@/logic/wallet/FuelWallet'
 import type { IWallet } from '@/logic/wallet/types'
 import { EvmWallet } from '@/logic/wallet/EvmWallet'
 import { SolanaWallet } from '@/logic/wallet/SolanaWallet'
-import Wallet from '@/logic/wallet/Wallet'
 
 export const useWalletsStore = defineStore('wallets', {
   state: (): IWalletsStore => ({
@@ -134,41 +133,6 @@ export const useWalletsStore = defineStore('wallets', {
       await this.refreshWallets(0)
     },
 
-    async handleConnections(wallets: IWallet[], status?: boolean, emit: boolean = true) {
-      const { set } = useStorageStore()
-
-      this.wallets.forEach((w) => {
-        if (wallets.map((w) => w.address.toLowerCase()).includes(w.address.toLowerCase())) {
-          w.status = typeof status !== 'undefined' ? (status ? 'online' : 'offline') : (w.status === 'offline' ? 'online' : 'offline')
-        }
-      })
-
-      const connectedWallets = Array.from(this.wallets.filter(w => w.status === 'online').map((w) => w.format()))
-      await set('connectedWallets', connectedWallets)
-
-      if (emit) await this.sendEvent('accountsChanged', connectedWallets)
-    },
-
-    async connectAll() {
-      const { set } = useStorageStore()
-
-      this.wallets
-        .filter(({ type }) => Wallet.AVAILABLE_SIGNER_TYPES.includes(type))
-        .forEach((wallet) => (wallet.status = 'online'))
-
-      await set('connectedWallets', Array.from(this.wallets.map((w) => w.format())))
-      await this.sendEvent('accountsChanged', Array.from(this.wallets.map((w) => w.format())))
-    },
-
-    async disconnectAll() {
-      const { set } = useStorageStore()
-
-      this.wallets.forEach((wallet) => (wallet.status = 'offline'))
-
-      await set('connectedWallets', [])
-      await this.sendEvent('accountsChanged', [])
-    },
-
     getWalletByAddress(address: string) {
       return this.wallets.find((w) => w.address.toLowerCase() === address.toLowerCase())
     },
@@ -177,7 +141,6 @@ export const useWalletsStore = defineStore('wallets', {
       this.requestId = id
       const { get } = useStorageStore()
       const wallets: IStoredWallet[] = (await get('wallets')) ?? []
-      const connectedWallets: IWallet[] = (await get('connectedWallets')) ?? []
 
       this.wallets = (
         await Promise.all(
@@ -198,26 +161,10 @@ export const useWalletsStore = defineStore('wallets', {
             await new Promise((resolve) => setTimeout(resolve, 10))
 
             wallet.tags = w.tags ?? []
-            wallet.status = connectedWallets
-              .map((w) => w.address.toLowerCase())
-              .includes(w.address.toLowerCase())
-              ? 'online'
-              : 'offline'
             return wallet
           })
         )
       ).filter((w) => w !== null)
-    },
-
-    async sendWalletsToPage(useChecked: boolean = false) {
-      if (useChecked) {
-        await this.handleConnections(this.wallets.filter(w => w.checked), true, false)
-      }
-
-      await this.sendMessage(
-        'eth_requestAccounts',
-        this.wallets.filter((w) => w.status === 'online').map((w) => w.address)
-      )
     },
 
     async generateFuelWalletsFromEvm(addresses: string[]): Promise<IStoredWallet[]> {

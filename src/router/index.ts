@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import WalletsView from '@/views/WalletsView.vue'
 import ImportView from '@/views/ImportView.vue'
-import ConnectView from '@/views/ConnectView.vue'
 import GenerateView from '@/views/GenerateView.vue'
 import HistoryView from '@/views/HistoryView.vue'
 import SignView from '@/views/SignView.vue'
@@ -25,11 +24,6 @@ const router = createRouter({
       path: '/import',
       name: 'import',
       component: ImportView
-    },
-    {
-      path: '/connect',
-      name: 'connect',
-      component: ConnectView
     },
     {
       path: '/generate',

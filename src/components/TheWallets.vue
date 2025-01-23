@@ -15,25 +15,13 @@ import IconShare from '@/components/icons/IconShare.vue'
 import IconDelete from '@/components/icons/IconDelete.vue'
 
 import { useWalletsStore } from '@/stores/wallets'
-import Wallet from '@/logic/wallet/Wallet'
 
 const { wallets } = toRefs(useWalletsStore())
-const { refreshWallets, connectAll, disconnectAll, exportToCSV, deleteWallets } = useWalletsStore()
+const { refreshWallets, exportToCSV, deleteWallets } = useWalletsStore()
 
 // Computed
 const total = computed<string>(() => {
-  const connected = wallets.value.filter((el) => el.status === 'online').length
-  return `${wallets.value.length} total, ${connected} connected`
-})
-
-const isSomeWalletOffline = computed<boolean>(() => {
-  return wallets.value
-    .filter((w) => Wallet.AVAILABLE_SIGNER_TYPES.includes(w.type))
-    .some((el) => el.status === 'offline')
-})
-
-const buttonConnectName = computed<string>(() => {
-  return isSomeWalletOffline.value ? 'Connect all' : 'Disconnect all'
+  return `${wallets.value.length} total`
 })
 
 const checkedWallets = computed<IWallet[]>(() => {
@@ -71,11 +59,6 @@ const filteredWallets = computed<IWallet[]>(() => {
 function toggleSearch() {
   isSearch.value = !isSearch.value
   search.value = ''
-}
-
-// Connect
-async function handleConnections() {
-  isSomeWalletOffline.value ? await connectAll() : await disconnectAll()
 }
 
 // Modal
@@ -136,14 +119,6 @@ onMounted(async () => await refreshWallets(0))
           />
 
           <p>{{ total }}</p>
-
-          <button
-            class="button button--xs blue wallets__btn"
-            :class="{ red: !isSomeWalletOffline }"
-            @click="handleConnections"
-          >
-            {{ buttonConnectName }}
-          </button>
         </div>
 
         <!-- Wallets -->
