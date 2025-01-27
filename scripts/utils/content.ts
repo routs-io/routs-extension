@@ -13,14 +13,19 @@ export const ContentMethods = {
             address: w.address,
             type: w.type,
             tags: w.tags
-        }));
+        })).filter(w => w.type !== 'unknown');
     },
 
     delete_accounts: async (addresses: string[]) => {
         const { get, set } = localStorage;
         const wallets: IWallet[] = await get('wallets') ?? [];
 
+        console.log(addresses)
+        console.log(wallets)
+
         const newWallets = wallets.filter(w => !addresses.map(a => a.toLowerCase()).includes(w.address.toLowerCase()))
+
+        console.log(newWallets)
 
         await set('wallets', newWallets)
     },
