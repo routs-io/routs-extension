@@ -87,23 +87,22 @@ export const useWalletsStore = defineStore('wallets', {
 
       const uniqueAddresses = Array.from(
         new Set([
-          ...walletsInStorage.map((w) => w.address.toLowerCase()),
-          ...wallets.map((w) => w.address.toLowerCase())
+          ...walletsInStorage.map((w) => w.address),
+          ...wallets.map((w) => w.address)
         ])
       )
       const uniqueWallets = uniqueAddresses.map((address) => ({
         privateKey:
-          walletsInStorage.find((w) => w.address.toLowerCase() === address)?.privateKey ??
-          wallets.find((w) => w.address.toLowerCase() === address)?.privateKey,
+          walletsInStorage.find((w) => w.address === address)?.privateKey ??
+          wallets.find((w) => w.address === address)?.privateKey,
         address:
-          walletsInStorage.find((w) => w.address.toLowerCase() === address)?.address ??
-          wallets.find((w) => w.address.toLowerCase() === address)?.address,
+          walletsInStorage.find((w) => w.address === address)?.address ??
+          wallets.find((w) => w.address === address)?.address,
         tags: Array.from(
-          walletsInStorage.find((w) => w.address.toLowerCase() === address)?.tags ??
-          wallets.find((w) => w.address.toLowerCase() === address)?.tags ??
+          walletsInStorage.find((w) => w.address === address)?.tags ??
+          wallets.find((w) => w.address === address)?.tags ??
           []
-        ),
-        type: this.detectAddressType(address)
+        )
       }))
 
       await set('wallets', uniqueWallets)
@@ -146,7 +145,8 @@ export const useWalletsStore = defineStore('wallets', {
         await Promise.all(
           wallets.map(async (w) => {
             let wallet: IWallet
-            w.type = this.detectAddressType(w.address)
+            w.type = this.detectAddressType(w.address);
+            console.log('type', w.address, w.type)
             if (w.type === 'evm') {
               wallet = new EvmWallet(w.privateKey)
             } else if (w.type === 'fuel') {
