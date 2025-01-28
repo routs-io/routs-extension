@@ -129,6 +129,8 @@ export const useWalletsStore = defineStore('wallets', {
       )
 
       await set('wallets', newWallets)
+      const eventPayload = wallets.map(w => w.address)
+      if (eventPayload.length) await this.sendEvent('accountsDeleted', eventPayload)
       await this.refreshWallets(0)
     },
 
