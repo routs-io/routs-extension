@@ -21,7 +21,7 @@ const { refreshWallets, exportToCSV, deleteWallets } = useWalletsStore()
 
 // Computed
 const total = computed<string>(() => {
-  return `${wallets.value.length} total`
+  return `Select ${wallets.value.length} wallet${wallets.value.length > 1 ? 's' : ''}`
 })
 
 const checkedWallets = computed<IWallet[]>(() => {
