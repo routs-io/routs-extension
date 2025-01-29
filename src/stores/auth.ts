@@ -7,7 +7,7 @@ export const useAuthStore = defineStore('auth', {
     isRegistered: false,
     isLocked: null,
     isExternalRequest: false,
-    projectVersion: '1.1.4'
+    projectVersion: '1.1.5'
   }),
   actions: {
     setIsRegistered(value: boolean) {
