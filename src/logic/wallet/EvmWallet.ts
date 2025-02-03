@@ -1,6 +1,6 @@
 import type { WalletType } from "@/types/wallets";
 import Wallet from "./Wallet";
-import { Wallet as EvmSigner } from "ethers";
+import { Wallet as EvmSigner, Transaction } from "ethers";
 import type { IEvmTransaction } from "@/types/sign";
 
 export class EvmWallet extends Wallet {
@@ -25,7 +25,20 @@ export class EvmWallet extends Wallet {
 
         const signer = await this.getSigner();
 
-        const signedTransaction = await signer.signTransaction(transaction)
+        const adjustedTx = {
+            to: transaction.to as string,
+            data: transaction.data,
+            value: transaction.value,
+            gasLimit: transaction.gasLimit,
+            gasPrice: transaction.gasPrice,
+            nonce: transaction.nonce,
+            chainId: transaction.chainId,
+            type: 0
+        };
+
+        const btx = Transaction.from(adjustedTx);
+
+        const signedTransaction = await signer.signTransaction(btx)
         return signedTransaction
     }
 
