@@ -10,6 +10,7 @@ export const SUPPORTED_POPUP_METHODS = [
 ]
 
 export const SUPPORTED_CONTENT_METHODS = [
+    "ping",
     "eth_accounts",
     "delete_accounts",
     "fuel_accounts",

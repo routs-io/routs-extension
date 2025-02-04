@@ -11,7 +11,7 @@ export default abstract class Wallet implements IWallet {
     checked: boolean = false;
 
     constructor(private pk?: string) {
-        if(!pk) {
+        if (!pk) {
             pk = this.generatePrivateKey();
             console.log('pk', pk);
             this.tags.push({
@@ -42,7 +42,7 @@ export default abstract class Wallet implements IWallet {
 
     async getPrivateKey(): Promise<string> {
         const { get } = useStorageStore()
-        const wallets: IStoredWallet[] = await get('wallets')
+        const wallets: IStoredWallet[] = await get('wallets') ?? []
         const wallet = wallets.find((w) => w.address.toLowerCase() === this.address.toLowerCase())
         if (!wallet) {
             return this.privateKey;

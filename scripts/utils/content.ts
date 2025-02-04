@@ -5,6 +5,10 @@ import { install } from './packages/@solana/webcrypto-ed25519-polyfill.js';
 import { SOCKET_URL } from './constants.js';
 
 export const ContentMethods = {
+    ping: async () => {
+        return { message: "Success" }
+    },
+
     eth_accounts: async () => {
         const { get } = localStorage;
         const wallets: IWallet[] = await get('wallets') ?? [];
