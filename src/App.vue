@@ -4,14 +4,17 @@ import { RouterView } from 'vue-router'
 import router from '@/router'
 
 // Components
-import AppNavigation from '@/components/app/AppNavigation.vue'
 import TheAuth from '@/components/TheAuth.vue'
+import AppNavigation from '@/components/app/AppNavigation.vue'
+import AppToaster from '@/components/app/AppToaster.vue'
 
 // Stores
 import { useAuthStore } from '@/stores/auth'
+import { useToasterStore } from '@/stores/toaster'
 
-const { isLocked, isExternalRequest } = toRefs(useAuthStore())
 const { checkIsLocked } = useAuthStore()
+const { isLocked, isExternalRequest } = toRefs(useAuthStore())
+const { toaster } = toRefs(useToasterStore())
 
 // Computed
 const isNavigation = computed<boolean>(() => {
@@ -31,7 +34,12 @@ onBeforeMount(async () => {
       <RouterView />
       <AppNavigation v-if="isNavigation" />
     </div>
+
     <TheAuth class="container" v-else />
+
+    <Transition name="toaster">
+      <AppToaster v-if="toaster" />
+    </Transition>
   </template>
 
   <TheScreen v-else />

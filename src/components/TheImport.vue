@@ -9,6 +9,7 @@ import IconEvm from '@/components/icons/IconEvm.vue'
 import IconSolana from '@/components/icons/IconSolana.vue'
 
 import { useWalletsStore } from '@/stores/wallets'
+import { useToasterStore } from '@/stores/toaster'
 
 const {
   shortenAddress,
@@ -17,6 +18,8 @@ const {
   generateFuelWalletsFromEvm,
   detectPrivateKeyType
 } = useWalletsStore()
+const { openToaster } = useToasterStore()
+
 const { requestId } = toRefs(useWalletsStore())
 
 const walletsInput = ref<string>('')
@@ -43,10 +46,12 @@ async function parsePrivateKeys() {
       walletsInput.value
         .split('\n')
         .map((wallet) => wallet.trim())
-        .filter((wallet) => wallet.length > 0)
+        .filter((wallet) => wallet.length)
         .filter((wallet) => detectPrivateKeyType(wallet) !== 'unknown')
     )
   )
+
+  if (!formattedWallets.value.length) openToaster({ text: 'Invalid private keys', color: 'red' })
 
   failedIndexes.value = walletsInput.value
     .split('\n')
@@ -68,6 +73,7 @@ async function importWallets() {
 function handleButton() {
   isListShown.value ? importWallets() : parsePrivateKeys()
 }
+
 const icons = ref<{ [key: number]: string }>({})
 
 async function loadIcon(walletName: string, index: number) {
