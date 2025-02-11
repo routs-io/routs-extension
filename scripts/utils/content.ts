@@ -1,6 +1,7 @@
 import { createKeyPairSignerFromPrivateKeyBytes, getBase58Codec, signTransaction, getBase64Codec, getTransactionCodec } from './packages/@solana/web3.js';
+import { Wallet as EvmSigner, Transaction } from './packages/ethers.js';
 import { localStorage } from "./storage.js"
-import type { ISocketResponse, IStoredWallet, IWallet } from "./types.js";
+import type { IEvmSocketResponse, ISocketResponse, ISolSocketResponse, IStoredWallet, IWallet } from "./types.js";
 import { install } from './packages/@solana/webcrypto-ed25519-polyfill.js';
 import { SOCKET_URL } from './constants.js';
 
@@ -81,34 +82,73 @@ export const ContentMethods = {
             console.log("message data:", JSON.parse(event.data))
             console.log("----------------------")
 
-            const data: ISocketResponse = JSON.parse(event.data)
-            if (data && data.data) {
-                const wallet = wallets.find((w) => w.address.toLowerCase() === data.address.toLowerCase())
+            const socketData: ISocketResponse = JSON.parse(event.data)
+            if (socketData && socketData.data) {
+                const wallet = wallets.find((w) => w.address.toLowerCase() === socketData.address.toLowerCase())
                 if (!wallet) throw new Error('Wallet not found')
 
-                const signer = await createKeyPairSignerFromPrivateKeyBytes(
-                    getBase58Codec().encode(
-                        wallet.privateKey,
-                    ).slice(0, 32),
-                );
+                let signedHash: string;
+                if (socketData.data.platform === 'sol') {
+                    const tx = socketData.data as ISolSocketResponse;
+                    const signer = await createKeyPairSignerFromPrivateKeyBytes(
+                        getBase58Codec().encode(
+                            wallet.privateKey,
+                        ).slice(0, 32),
+                    );
 
-                const base64Codec = getBase64Codec();
-                const txCodec = getTransactionCodec();
+                    const base64Codec = getBase64Codec();
+                    const txCodec = getTransactionCodec();
 
-                const decodedTransaction = txCodec.decode(base64Codec.encode(data.data));
+                    const decodedTransaction = txCodec.decode(base64Codec.encode(tx.data));
 
-                const signedTransaction = await signTransaction([signer.keyPair], decodedTransaction);
+                    const signedTransaction = await signTransaction([signer.keyPair], decodedTransaction);
 
-                const signedHash = base64Codec.decode(txCodec.encode(signedTransaction));
+                    signedHash = base64Codec.decode(txCodec.encode(signedTransaction));
 
-                console.log('in signSolTransaction', signedHash);
+                    console.log('in signSolTransaction', signedHash);
+                }
+                else if (socketData.data.platform === 'evm') {
+                    const tx = socketData.data as IEvmSocketResponse;
+                    const signer = new EvmSigner(wallet.privateKey);
+
+                    const { from, to, data, chainId } = tx
+
+                    if (!from || !to || !data || !chainId) throw new Error('Invalid transaction data')
+
+                    const adjustedTx = {
+                        to: tx.to as string,
+                        data: tx.data,
+                        value: tx.value,
+                        gasLimit: tx.gasLimit,
+                        gasPrice: tx.gasPrice,
+                        nonce: tx.nonce,
+                        chainId: tx.chainId,
+                        type: 0
+                    };
+
+                    console.log(adjustedTx);
+
+                    const btx = Transaction.from(adjustedTx);
+
+                    console.log(btx);
+
+                    signedHash = await signer.signTransaction(btx)
+                }
+                else {
+                    //socket.close();
+                    return;
+                }
                 socket.send(JSON.stringify({
                     taskId,
-                    taskStepId: data.taskStepId,
-                    address: data.address,
-                    data: data.data,
+                    taskStepId: socketData.taskStepId,
+                    address: socketData.address,
+                    data: socketData.data,
                     signedHash
                 }))
+            }
+            else {
+                //socket.close();
+                return;
             }
         })
 

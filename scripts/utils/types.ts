@@ -9,11 +9,31 @@ export interface SendMessageResponse {
     message?: string
 }
 
+export interface ISolSocketResponse {
+    data: string,
+    kind: string;
+    chainId: string | null;
+    platform: WalletType;
+}
+
+export interface IEvmSocketResponse {
+    data: string,
+    to: string | null;
+    from: string | null;
+    nonce: number | null;
+    gasLimit: string | null;
+    gasPrice: string | null;
+    value?: string;
+    chainId: string | null;
+    kind: string;
+    platform: WalletType;
+}
+
 export interface ISocketResponse {
     address: string,
     taskId: number,
     taskStepId: number,
-    data: string,
+    data: ISolSocketResponse | IEvmSocketResponse,
 }
 
 export interface IWallet {
@@ -37,7 +57,7 @@ export interface ITag {
     color: TypeTagColor
 }
 
-export type WalletType = 'evm' | 'fuel' | 'btc' | 'dash' | 'unknown'
+export type WalletType = 'evm' | 'sol' | 'fuel' | 'unknown'
 
 export type WalletStatus = 'online' | 'offline'
 

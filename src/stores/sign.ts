@@ -47,7 +47,7 @@ export const useSignStore = defineStore('sign', {
         setTransactions(requestId: number, path: IIncomingPathStep[]) {
             const { refreshWallets } = useWalletsStore()
             refreshWallets(0);
-            console.log(path);
+            console.log('transactions from front', path);
             this.requestId = requestId
             this.path = path.map((step, index) => {
                 const id = this.generateId(index)
@@ -123,10 +123,12 @@ export const useSignStore = defineStore('sign', {
         },
 
         async sendTransactionsToPage() {
+            const path = this.formatPathToIncoming(this.path)
+            console.log('transactions after signing', path);
             await chrome.runtime.sendMessage({
                 id: this.requestId,
                 method: 'eth_signTransactions',
-                data: this.formatPathToIncoming(this.path),
+                data: path,
                 direction: 'out'
             })
         },
