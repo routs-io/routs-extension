@@ -6,6 +6,7 @@ import GenerateView from '@/views/GenerateView.vue'
 import HistoryView from '@/views/HistoryView.vue'
 import SignView from '@/views/SignView.vue'
 import SettingsView from '@/views/SettingsView.vue'
+import PlugView from '@/views/PlugView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -44,6 +45,11 @@ const router = createRouter({
       path: '/settings',
       name: 'settings',
       component: SettingsView
+    },
+    {
+      path: '/plug',
+      name: 'plug',
+      component: PlugView
     }
   ]
 })

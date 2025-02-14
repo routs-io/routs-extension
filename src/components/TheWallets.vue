@@ -128,7 +128,7 @@ onMounted(async () => await refreshWallets(0))
       </template>
 
       <!-- Empty -->
-      <WalletsPlug v-else />
+      <WalletsPlug v-else is-empty />
     </div>
 
     <div v-if="checkedWallets.length" class="section__bottom">
