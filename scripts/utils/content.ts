@@ -18,7 +18,7 @@ import {
 import { Wallet as EvmSigner, Transaction } from './packages/ethers.js'
 import { install } from './packages/@solana/webcrypto-ed25519-polyfill.js'
 
-import { io, Socket } from 'socket.io-client'
+import { io, Socket } from './packages/socket.io.js'
 import { localStorage } from './storage.js'
 import { SOCKET_URL } from './constants.js'
 
@@ -67,11 +67,11 @@ export const ContentMethods = {
       .map((w) =>
         evmFilterAddresses
           ? {
-              address: w.address,
-              index: evmFilterAddresses
-                .map((a) => `${a.slice(0, 6)}...${a.slice(-4)}`.toLowerCase())
-                .indexOf(w.tags[0].name.toLowerCase())
-            }
+            address: w.address,
+            index: evmFilterAddresses
+              .map((a) => `${a.slice(0, 6)}...${a.slice(-4)}`.toLowerCase())
+              .indexOf(w.tags[0].name.toLowerCase())
+          }
           : w.address
       )
   },
@@ -91,8 +91,10 @@ export const ContentMethods = {
     const socket: Socket = io(SOCKET_URL, {
       query: {
         action: 'transaction_sign',
-        taskId,
-        auth: encodeURIComponent(accessToken)
+        taskId
+      },
+      auth: {
+        token: accessToken
       },
       transports: ['websocket'], // ✅ Force WebSocket transport
       reconnection: true, // ✅ Auto-reconnect
@@ -104,23 +106,20 @@ export const ContentMethods = {
       console.log('Socket.io connected:', socket.id)
     })
 
-    socket.on('connect_error', (error) => {
+    socket.on('connect_error', (error: Error) => {
       console.error('Socket connection error:', error)
     })
 
-    socket.on('disconnect', (reason) => {
+    socket.on('disconnect', (reason: Error) => {
       console.warn('Socket.io disconnected:', reason)
     })
 
     // Send periodic keep-alive messages
     setInterval(() => {
-      socket.emit('ping', { taskId })
+      socket.send({ taskId, ping: true })
     }, 5000)
 
-    socket.on('message', async (eventData: string) => {
-      console.log('Received message:', eventData)
-
-      const socketData: ISocketResponse = JSON.parse(eventData)
+    socket.on('message', async (socketData: ISocketResponse) => {
       if (!socketData || !socketData.data) return
 
       const wallet = wallets.find(
@@ -144,8 +143,10 @@ export const ContentMethods = {
         return
       }
 
+      console.log('signedHash', signedHash)
+
       // Emit signed transaction back to the server
-      socket.emit('signedTransaction', {
+      socket.send({
         taskId,
         taskStepId: socketData.taskStepId,
         address: socketData.address,
@@ -158,7 +159,7 @@ export const ContentMethods = {
       console.log('Socket.io connection closed')
     })
 
-    socket.on('error', (event) => {
+    socket.on('error', (event: Event) => {
       console.error('Socket.io error:', event)
     })
   }
